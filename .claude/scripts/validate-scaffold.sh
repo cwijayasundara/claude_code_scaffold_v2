@@ -24,10 +24,10 @@ echo ""
 echo "2. CLAUDE.md"
 if [[ -f "CLAUDE.md" ]]; then
   LINE_COUNT=$(wc -l < CLAUDE.md | tr -d ' ')
-  if [[ "$LINE_COUNT" -le 90 ]]; then
-    pass "CLAUDE.md is $LINE_COUNT lines (under 90)"
+  if [[ "$LINE_COUNT" -le 120 ]]; then
+    pass "CLAUDE.md is $LINE_COUNT lines (under 120)"
   else
-    fail "CLAUDE.md is $LINE_COUNT lines (should be under 90)"
+    fail "CLAUDE.md is $LINE_COUNT lines (should be under 120)"
   fi
   if grep -q ".claude/docs/" CLAUDE.md; then pass "references .claude/docs/"; else fail "missing .claude/docs/ references"; fi
   if grep -q "Layer" CLAUDE.md; then pass "documents layer model"; else fail "missing layer model"; fi

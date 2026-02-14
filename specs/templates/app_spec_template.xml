@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  App Spec Template — Define your full application here.
+  Run: /init-from-spec  or  bash scripts/init-from-app-spec.sh specs/app_spec.xml
+  This generates specs/feature_list.json + specs/features/*.md stubs.
+-->
+<app_spec>
+  <meta>
+    <name></name>
+    <version>0.1.0</version>
+    <description></description>
+    <stack>
+      <backend>Python 3.12 / FastAPI</backend>
+      <frontend>React 18 / TypeScript / Tailwind</frontend>
+      <database></database>
+    </stack>
+  </meta>
+
+  <features>
+    <!-- Each feature becomes a spec in specs/features/ -->
+    <feature id="feature-001" priority="high">
+      <name>Example Feature</name>
+      <description>Brief description of what this feature does</description>
+      <acceptance_criteria>
+        <criterion id="AC-001">Given a user is logged in, When they click X, Then Y happens</criterion>
+      </acceptance_criteria>
+      <dependencies></dependencies>
+    </feature>
+  </features>
+
+  <data_model>
+    <entity name="User">
+      <field name="id" type="uuid" required="true">Primary key</field>
+      <field name="email" type="string" required="true">Unique email</field>
+      <field name="name" type="string" required="true">Display name</field>
+      <field name="created_at" type="datetime" required="true">Creation timestamp</field>
+    </entity>
+  </data_model>
+
+  <api_endpoints>
+    <endpoint method="GET" path="/api/health">
+      <description>Health check endpoint</description>
+      <response>{"status": "ok"}</response>
+    </endpoint>
+  </api_endpoints>
+
+  <non_functional>
+    <requirement type="performance">API response time under 200ms for p95</requirement>
+    <requirement type="security">All endpoints require authentication except /health</requirement>
+    <requirement type="availability">99.9% uptime SLA</requirement>
+  </non_functional>
+</app_spec>

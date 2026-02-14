@@ -11,9 +11,9 @@ You are a **harness engineer**, not a coder. Your job is to design the environme
 
 ### What You Do
 
-1. **Write specs** — Collaborate with the spec-writer agent or fill in `specs/templates/feature_spec.md` manually.
+1. **Write specs** — Collaborate with the spec-writer agent or fill in `.claude/templates/feature_spec.md` manually.
 2. **Approve plans** — Review execution plans before implementation begins.
-3. **Review output** — Read the agent's code, run `bash scripts/lint_all.sh`, run `make test`.
+3. **Review output** — Read the agent's code, run `bash .claude/lint_all.sh`, run `make test`.
 4. **Evolve the harness** — When agents make mistakes, fix the harness: linter rules, agent instructions, spec templates.
 
 ### What You Never Do
@@ -41,19 +41,19 @@ SPEC → PLAN → APPROVE → IMPLEMENT+TEST → SPEC REVIEW → CODE REVIEW
 
 ```
 Track A:  specs/app_spec.xml  → init-from-app-spec.sh → specs/features/*.md
-Track B:  Write specs directly using specs/templates/feature_spec.md
+Track B:  Write specs directly using .claude/templates/feature_spec.md
 
 Both converge at:  specs/features/<name>.md → implementer agent → src/
 ```
 
 ### Track A: XML App Spec
-1. Copy `specs/templates/app_spec_template.xml` to `specs/app_spec.xml`
+1. Copy `.claude/templates/app_spec_template.xml` to `specs/app_spec.xml`
 2. Define features, data model, API endpoints, non-functional requirements
-3. Run `bash scripts/init-from-app-spec.sh specs/app_spec.xml` — generates feature spec stubs
+3. Run `bash .claude/scripts/init-from-app-spec.sh specs/app_spec.xml` — generates feature spec stubs
 4. Flesh out stubs using the spec-writer agent
 
 ### Track B: Direct Spec Writing
-1. Copy `specs/templates/feature_spec.md` to `specs/features/<name>.md`
+1. Copy `.claude/templates/feature_spec.md` to `specs/features/<name>.md`
 2. Fill in description, acceptance criteria, affected layers
 3. Review and approve the spec
 
@@ -67,7 +67,7 @@ The spec-writer agent interviews you to draw out requirements, then drafts the s
 # Claude Code: "Use the spec-writer agent to brainstorm a spec for [rough idea]"
 
 # Option B: Manual
-cp specs/templates/feature_spec.md specs/features/<name>.md
+cp .claude/templates/feature_spec.md specs/features/<name>.md
 ```
 
 ### 2. Plan (Agent — mandatory, requires human approval)
@@ -83,7 +83,7 @@ The implementer writes both code and tests in a single pass, following the appro
 1. Read the spec and approved execution plan
 2. Implement layer by layer: Types → Config → Repo → Service → Runtime → UI
 3. **Write tests alongside each layer**
-4. Run linters: `bash scripts/lint_all.sh`
+4. Run linters: `bash .claude/lint_all.sh`
 5. Run tests: `pytest tests/ --cov=src --cov-fail-under=80`
 
 ### 4. Coverage Gaps (Agent — test-writer, if needed)
@@ -104,9 +104,9 @@ Checks: Is the code well-written? Does it follow conventions?
 
 | You notice... | You fix... | By... |
 |---|---|---|
-| Agent violates a convention | Linter rules | Adding a check to `scripts/linters/` |
+| Agent violates a convention | Linter rules | Adding a check to `.claude/linters/` |
 | Agent misunderstands architecture | Agent instructions | Updating `.claude/agents/*.md` |
-| Spec was ambiguous | Spec template | Adding a section to `specs/templates/feature_spec.md` |
+| Spec was ambiguous | Spec template | Adding a section to `.claude/templates/feature_spec.md` |
 | Reviewer catches a pattern | CLAUDE.md or conventions | Encoding the pattern in docs |
 
 **Never fix code directly. Fix the harness that prevents the class of error from recurring.**

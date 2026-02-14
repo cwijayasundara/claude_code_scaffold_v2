@@ -21,8 +21,8 @@ Types → Config → Repo → Service → Runtime → UI
 | Runtime | `src/runtime/` | Server bootstrap, middleware       |
 | UI      | `src/ui/`      | Presentation, CLI, user-facing     |
 
-Backward imports are **forbidden** and enforced by `scripts/linters/layer_deps.sh`.
-Details: [docs/architecture.md](docs/architecture.md)
+Backward imports are **forbidden** and enforced by `.claude/linters/layer_deps.sh`.
+Details: [.claude/docs/architecture.md](.claude/docs/architecture.md)
 
 ## Spec-Driven Workflow
 
@@ -34,7 +34,7 @@ SPEC (collaborative) → PLAN (agent) → APPROVE (human) → IMPLEMENT + TEST (
 
 **Plan approval is mandatory** — the agent writes the execution plan, the human reviews and approves it before any code is written.
 
-Details: [docs/workflow.md](docs/workflow.md) | [docs/spec-system.md](docs/spec-system.md)
+Details: [.claude/docs/workflow.md](.claude/docs/workflow.md) | [.claude/docs/spec-system.md](.claude/docs/spec-system.md)
 
 ## Conventions
 
@@ -43,13 +43,27 @@ Details: [docs/workflow.md](docs/workflow.md) | [docs/spec-system.md](docs/spec-
 - **File size**: Max 300 lines/file, 50 lines/function
 - **Types**: Refined Pydantic types for domain concepts — no raw `str`/`int` for IDs, emails, etc.
 - **Tests**: Every service function needs a test in `tests/` mirroring `src/`. Coverage minimum: 80%
-- **Git workflow**: Feature branches per spec, merge after both reviews pass. See `docs/git-workflow.md`.
+- **Git workflow**: Feature branches per spec, merge after both reviews pass. See `.claude/docs/git-workflow.md`.
 
-Details: [docs/conventions.md](docs/conventions.md)
+Details: [.claude/docs/conventions.md](.claude/docs/conventions.md)
+
+## Scaffolding Structure
+
+All framework files live in `.claude/`. The project root stays clean for application code.
+
+| Path | Purpose |
+|------|---------|
+| `.claude/agents/` | Sub-agent definitions |
+| `.claude/docs/` | Framework documentation |
+| `.claude/hooks/` | Pre/post write hooks |
+| `.claude/linters/` | Custom linters |
+| `.claude/templates/` | Spec and plan templates |
+| `.claude/scripts/` | Utility scripts (validate, init-from-spec) |
+| `.claude/lint_all.sh` | Master linter runner |
 
 ## Linters (5 custom)
 
-Run all: `bash scripts/lint_all.sh`
+Run all: `bash .claude/lint_all.sh`
 
 | Linter | Enforces |
 |--------|----------|
@@ -59,7 +73,7 @@ Run all: `bash scripts/lint_all.sh`
 | `file_size` | 300-line file / 50-line function limits |
 | `spec_coverage` | Service modules trace to specs |
 
-All linter errors include **remediation instructions**. Details: [docs/linters.md](docs/linters.md)
+All linter errors include **remediation instructions**. Details: [.claude/docs/linters.md](.claude/docs/linters.md)
 
 ## Agents (6)
 
@@ -86,7 +100,7 @@ Both must pass before a feature is considered complete.
 2. **Read files** before modifying them
 3. **If the spec is ambiguous, stop and ask** — do not guess
 4. **Plan approval is mandatory** — write the execution plan, wait for human approval, then implement
-5. **Run linters** after writing code: `bash scripts/lint_all.sh`
+5. **Run linters** after writing code: `bash .claude/lint_all.sh`
 6. When a linter fails, read the error — it contains the fix
 7. Keep changes small and focused on a single spec
 8. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
@@ -96,9 +110,9 @@ Both must pass before a feature is considered complete.
 
 | Resource | Location |
 |----------|----------|
-| Full workflow | [docs/workflow.md](docs/workflow.md) |
-| Architecture | [docs/architecture.md](docs/architecture.md) |
-| Conventions | [docs/conventions.md](docs/conventions.md) |
-| Linter docs | [docs/linters.md](docs/linters.md) |
-| Spec system | [docs/spec-system.md](docs/spec-system.md) |
-| Git workflow | [docs/git-workflow.md](docs/git-workflow.md) |
+| Full workflow | [.claude/docs/workflow.md](.claude/docs/workflow.md) |
+| Architecture | [.claude/docs/architecture.md](.claude/docs/architecture.md) |
+| Conventions | [.claude/docs/conventions.md](.claude/docs/conventions.md) |
+| Linter docs | [.claude/docs/linters.md](.claude/docs/linters.md) |
+| Spec system | [.claude/docs/spec-system.md](.claude/docs/spec-system.md) |
+| Git workflow | [.claude/docs/git-workflow.md](.claude/docs/git-workflow.md) |

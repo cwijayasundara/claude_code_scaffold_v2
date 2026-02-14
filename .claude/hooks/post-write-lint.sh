@@ -5,7 +5,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-LINTER_DIR="${PROJECT_ROOT}/scripts/linters"
+LINTER_DIR="${PROJECT_ROOT}/.claude/linters"
 
 # Read tool result from stdin
 INPUT=$(cat)

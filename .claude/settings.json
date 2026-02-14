@@ -20,7 +20,7 @@
       "Bash(mkdir *)",
       "Bash(ls *)",
       "Bash(ls)",
-      "Bash(bash scripts/*)"
+      "Bash(bash .claude/*)"
     ]
   },
   "hooks": {

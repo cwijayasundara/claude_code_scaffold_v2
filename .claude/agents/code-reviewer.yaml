@@ -16,7 +16,7 @@ instructions: |
   2. **Read the implementation** — review all changed/new files
   3. **Check spec compliance** — verify EVERY acceptance criterion
   4. **Run 12-point checklist** — see below
-  5. **Run linters** — execute `bash scripts/lint_all.sh`
+  5. **Run linters** — execute `bash .claude/lint_all.sh`
   6. **Produce verdict** — structured output (see format below)
 
   ## Spec Compliance (CHECK FIRST)

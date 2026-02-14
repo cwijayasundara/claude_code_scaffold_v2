@@ -16,12 +16,12 @@ Run this agent when:
 
 ## Process
 
-1. **Scan** — run `bash scripts/lint_all.sh` and collect all violations
+1. **Scan** — run `bash .claude/lint_all.sh` and collect all violations
 2. **Prioritize** — fix layer violations first, then size limits, then naming
 3. **Plan** — for each fix, determine the minimal change needed
 4. **Refactor** — make changes one file at a time, running linters after each
 5. **Verify** — run tests to ensure nothing breaks: `pytest tests/`
-6. **Document** — update `docs/` if any public interfaces changed
+6. **Document** — update `.claude/docs/` if any public interfaces changed
 7. **Commit separately** — one commit per refactoring for easy review and revert
 
 ## Anti-Patterns to Fix

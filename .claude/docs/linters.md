@@ -1,6 +1,6 @@
 # Custom Linters Reference
 
-Run all: `bash scripts/lint_all.sh`
+Run all: `bash .claude/lint_all.sh`
 
 All linters exit 0 on success, 1 on failure. Error messages include remediation instructions.
 

@@ -11,7 +11,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // 
 
 # Check: writing to allowed locations
 ALLOWED=false
-for prefix in src/ tests/ docs/ specs/ scripts/ .claude/; do
+for prefix in src/ tests/ specs/ .claude/; do
     if [[ "$FILE_PATH" == *"$prefix"* ]]; then
         ALLOWED=true
         break
@@ -19,7 +19,7 @@ for prefix in src/ tests/ docs/ specs/ scripts/ .claude/; do
 done
 
 if ! $ALLOWED; then
-    echo "pre-write-check: Writing to '${FILE_PATH}' — not in standard project directories (src/, tests/, docs/, specs/, scripts/)."
+    echo "pre-write-check: Writing to '${FILE_PATH}' — not in standard project directories (src/, tests/, specs/, .claude/)."
 fi
 
 # Check: writing to src/ — remind about spec requirement

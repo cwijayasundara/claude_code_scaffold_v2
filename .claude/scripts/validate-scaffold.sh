@@ -1,6 +1,6 @@
 #!/bin/bash
 # Validate the Claude Code Production Scaffold v2 structure.
-# Usage: ./scripts/validate-scaffold.sh
+# Usage: bash .claude/scripts/validate-scaffold.sh
 
 PASS=0
 FAIL=0
@@ -29,7 +29,7 @@ if [[ -f "CLAUDE.md" ]]; then
   else
     fail "CLAUDE.md is $LINE_COUNT lines (should be under 90)"
   fi
-  if grep -q "docs/" CLAUDE.md; then pass "references docs/"; else fail "missing docs/ references"; fi
+  if grep -q ".claude/docs/" CLAUDE.md; then pass "references .claude/docs/"; else fail "missing .claude/docs/ references"; fi
   if grep -q "Layer" CLAUDE.md; then pass "documents layer model"; else fail "missing layer model"; fi
   if grep -q "lint_all.sh" CLAUDE.md; then pass "references lint_all.sh"; else fail "missing lint_all.sh reference"; fi
 fi
@@ -74,13 +74,13 @@ echo ""
 # ---- 6. Custom linters (5 expected) ----
 echo "6. Custom linters"
 for linter in layer_deps structured_logging naming_conventions file_size spec_coverage; do
-  if [[ -f "scripts/linters/$linter.sh" && -x "scripts/linters/$linter.sh" ]]; then
+  if [[ -f ".claude/linters/$linter.sh" && -x ".claude/linters/$linter.sh" ]]; then
     pass "$linter.sh"
   else
     fail "$linter.sh missing or not executable"
   fi
 done
-if [[ -f "scripts/lint_all.sh" && -x "scripts/lint_all.sh" ]]; then
+if [[ -f ".claude/lint_all.sh" && -x ".claude/lint_all.sh" ]]; then
   pass "lint_all.sh"
 else
   fail "lint_all.sh missing or not executable"
@@ -89,10 +89,10 @@ echo ""
 
 # ---- 7. Spec system ----
 echo "7. Spec system"
-for tmpl in specs/templates/app_spec_template.xml specs/templates/feature_spec.md specs/templates/design_doc.md specs/templates/execution_plan.md; do
+for tmpl in .claude/templates/app_spec_template.xml .claude/templates/feature_spec.md .claude/templates/design_doc.md .claude/templates/execution_plan.md; do
   if [[ -f "$tmpl" ]]; then pass "$tmpl"; else fail "$tmpl missing"; fi
 done
-if [[ -f "scripts/init-from-app-spec.sh" && -x "scripts/init-from-app-spec.sh" ]]; then
+if [[ -f ".claude/scripts/init-from-app-spec.sh" && -x ".claude/scripts/init-from-app-spec.sh" ]]; then
   pass "init-from-app-spec.sh"
 else
   fail "init-from-app-spec.sh missing or not executable"
@@ -102,7 +102,7 @@ echo ""
 # ---- 8. Documentation (5 expected) ----
 echo "8. Documentation"
 for doc in architecture workflow conventions linters spec-system; do
-  if [[ -f "docs/$doc.md" ]]; then pass "docs/$doc.md"; else fail "docs/$doc.md missing"; fi
+  if [[ -f ".claude/docs/$doc.md" ]]; then pass ".claude/docs/$doc.md"; else fail ".claude/docs/$doc.md missing"; fi
 done
 echo ""
 

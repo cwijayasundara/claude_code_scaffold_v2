@@ -3,24 +3,39 @@
 > Spec-driven workflow. Specs are the source of truth; agents implement from them.
 > **Humans write specs and review. Agents do everything else.**
 
-## Orchestration Model
+## The Harness Engineer's Role
+
+> Ref: [OpenAI — Harness Engineering](https://openai.com/index/harness-engineering/)
+
+You are a **harness engineer**, not a coder. Your job is to design the environment that makes agents productive. You write zero lines of application code. Instead, you:
+
+### What You Do
+
+1. **Write specs** — Collaborate with the spec-writer agent or fill in `specs/templates/feature_spec.md` manually.
+2. **Approve plans** — Review execution plans before implementation begins.
+3. **Review output** — Read the agent's code, run `bash scripts/lint_all.sh`, run `make test`.
+4. **Evolve the harness** — When agents make mistakes, fix the harness: linter rules, agent instructions, spec templates.
+
+### What You Never Do
+
+- Write application code directly
+- Fix bugs by editing `src/` — write a bug-fix spec instead
+- Skip review — every agent output gets human review before merge
+
+### Daily Workflow
 
 ```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────────────┐    ┌─────────┐
-│  SPEC   │───▶│ DESIGN  │───▶│  PLAN   │───▶│ IMPLEMENT+TEST  │───▶│ REVIEW  │
-│ (human) │    │ (agent) │    │ (agent) │    │    (agent)      │    │ (agent) │
-└─────────┘    └─────────┘    └─────────┘    └─────────────────┘    └─────────┘
-     │                                              │                     │
-     │              ┌──────────┐                    │                     │
-     └─────────────▶│ REFACTOR │◀───────────────────┘                     │
-                    │  (agent) │                                          │
-                    └──────────┘                                          │
-                         ▲                                                │
-                         └────────────────────────────────────────────────┘
+Morning:   Review open PRs, read execution plan updates, check linter/test results
+Work:      Write specs → approve plans → invoke agents → review output → iterate
+Retro:     Capture review insights as linter rules, doc updates, or agent instruction changes
 ```
 
-**Human responsibilities**: Write specs, review PRs, evolve the harness.
-**Agent responsibilities**: Design, plan, implement, test, review, refactor.
+## Workflow Phases
+
+```
+SPEC → PLAN → APPROVE → IMPLEMENT+TEST → SPEC REVIEW → CODE REVIEW
+(collab.)  (agent)  (human)     (agent)        (agent)       (agent)
+```
 
 ## Dual-Track Spec System
 
@@ -42,58 +57,56 @@ Both converge at:  specs/features/<name>.md → implementer agent → src/
 2. Fill in description, acceptance criteria, affected layers
 3. Review and approve the spec
 
-## Workflow Phases
+## Phase Details
 
-### 1. Spec (Human)
-Write or generate a feature spec in `specs/features/`. Use the template.
-**Key**: Be precise about acceptance criteria. Each criterion becomes a test.
+### 1. Spec (Human + spec-writer agent)
+The spec-writer agent interviews you to draw out requirements, then drafts the spec section by section for your approval.
 
-### 2. Design (Agent — spec-writer)
-The spec-writer agent refines rough ideas into structured specs and optionally produces a design doc in `docs/designs/`.
+```bash
+# Option A: Collaborative (recommended)
+# Claude Code: "Use the spec-writer agent to brainstorm a spec for [rough idea]"
 
-### 3. Plan (Agent)
-Create an execution plan using `specs/templates/execution_plan.md`. The plan is a living document updated during implementation with progress, decisions, and surprises.
+# Option B: Manual
+cp specs/templates/feature_spec.md specs/features/<name>.md
+```
 
-### 4. Implement + Test (Agent — implementer)
-The implementer writes both code and tests in a single pass, layer by layer:
-1. Read the spec: `specs/features/<feature>.md`
-2. Read the execution plan (if exists)
-3. Implement layer by layer: Types → Config → Repo → Service → Runtime → UI
-4. **Write tests alongside each layer** — every service function gets a corresponding test
-5. Run linters: `bash scripts/lint_all.sh`
-6. Run tests: `pytest tests/ --cov=src --cov-fail-under=80` — all must pass, coverage enforced
-7. Update execution plan progress checkboxes
+### 2. Plan (Agent — mandatory, requires human approval)
+The agent writes an execution plan. **No implementation begins until you approve the plan.**
 
-Tests are **proof of correctness**, not ceremony. What matters is that coverage is mechanically enforced and every acceptance criterion has a corresponding test.
+The plan includes:
+- **Small tasks** (2-5 minutes each) with exact file paths
+- **Verification steps** for each task
+- **Milestones** grouping related tasks
 
-### 5. Coverage Gaps (Agent — test-writer, if needed)
-If coverage falls below 80% or acceptance criteria lack test coverage, the test-writer agent fills gaps:
-- Edge cases and error paths not covered by the implementer
-- Integration tests across layer boundaries
-- Regression tests for discovered bugs
+### 3. Implement + Test (Agent — implementer)
+The implementer writes both code and tests in a single pass, following the approved plan:
+1. Read the spec and approved execution plan
+2. Implement layer by layer: Types → Config → Repo → Service → Runtime → UI
+3. **Write tests alongside each layer**
+4. Run linters: `bash scripts/lint_all.sh`
+5. Run tests: `pytest tests/ --cov=src --cov-fail-under=80`
 
-### 6. Refactor (Agent — refactorer)
+### 4. Coverage Gaps (Agent — test-writer, if needed)
+If coverage falls below 80% or acceptance criteria lack test coverage, the test-writer agent fills gaps.
+
+### 5. Refactor (Agent — refactorer)
 Clean up the implementation while keeping all tests green.
 
-### 7. Review (Agent — code-reviewer)
-1. Verify each acceptance criterion from the spec
-2. Run 12-point quality checklist
-3. Update execution plan Outcomes section
-4. Produce verdict: APPROVE or REQUEST_CHANGES
+### 6. Spec Review (Agent — spec-reviewer)
+Checks: Did we build what the spec says? Are all acceptance criteria met?
 
-## Feedback Loops
+### 7. Code Review (Agent — code-reviewer)
+Checks: Is the code well-written? Does it follow conventions?
 
-The key insight from harness engineering: **when something fails, don't "try harder" — ask what capability is missing and make it enforceable.**
+## Feedback Loops — Evolving the Harness
 
-- Linter errors → update linter rules + error messages
-- Agent mistakes → update CLAUDE.md or sub-agent instructions
-- Spec ambiguities → refine the spec template
-- Architecture drift → add new structural tests
-- Review findings → encode as linter rules
+**When something fails, don't "try harder" — ask what capability is missing and make it enforceable.**
 
-Every human review insight should be captured as either:
-1. A documentation update in `docs/`
-2. A new linter rule in `scripts/linters/`
-3. An update to agent instructions in `.claude/agents/`
+| You notice... | You fix... | By... |
+|---|---|---|
+| Agent violates a convention | Linter rules | Adding a check to `scripts/linters/` |
+| Agent misunderstands architecture | Agent instructions | Updating `.claude/agents/*.md` |
+| Spec was ambiguous | Spec template | Adding a section to `specs/templates/feature_spec.md` |
+| Reviewer catches a pattern | CLAUDE.md or conventions | Encoding the pattern in docs |
 
 **Never fix code directly. Fix the harness that prevents the class of error from recurring.**

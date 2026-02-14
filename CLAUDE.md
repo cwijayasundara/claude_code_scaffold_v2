@@ -1,6 +1,7 @@
 # Claude Code Production Scaffold v2
 
-> **Philosophy**: Humans steer. Agents execute. Specs are the source of truth.
+> **Philosophy**: Humans are harness engineers. Agents write all code. Specs are the source of truth.
+> Ref: [OpenAI — Harness Engineering](https://openai.com/index/harness-engineering/)
 > This file is a map, not a manual. Follow pointers to deeper docs.
 
 ## Architecture
@@ -28,8 +29,10 @@ Details: [docs/architecture.md](docs/architecture.md)
 **No manual code.** All code is agent-generated from specs. Humans write specs and review.
 
 ```
-SPEC (human) → DESIGN (agent) → PLAN (agent) → IMPLEMENT + TEST (agent) → REVIEW (agent)
+SPEC (collaborative) → PLAN (agent) → APPROVE (human) → IMPLEMENT + TEST (agent) → SPEC REVIEW (agent) → CODE REVIEW (agent)
 ```
+
+**Plan approval is mandatory** — the agent writes the execution plan, the human reviews and approves it before any code is written.
 
 Details: [docs/workflow.md](docs/workflow.md) | [docs/spec-system.md](docs/spec-system.md)
 
@@ -40,6 +43,7 @@ Details: [docs/workflow.md](docs/workflow.md) | [docs/spec-system.md](docs/spec-
 - **File size**: Max 300 lines/file, 50 lines/function
 - **Types**: Refined Pydantic types for domain concepts — no raw `str`/`int` for IDs, emails, etc.
 - **Tests**: Every service function needs a test in `tests/` mirroring `src/`. Coverage minimum: 80%
+- **Git workflow**: Feature branches per spec, merge after both reviews pass. See `docs/git-workflow.md`.
 
 Details: [docs/conventions.md](docs/conventions.md)
 
@@ -57,25 +61,36 @@ Run all: `bash scripts/lint_all.sh`
 
 All linter errors include **remediation instructions**. Details: [docs/linters.md](docs/linters.md)
 
-## Agents (5)
+## Agents (6)
 
 | Agent | Role |
 |-------|------|
-| `spec-writer` | Intent → structured specs |
+| `spec-writer` | Brainstorming interviewer: collaborates with human to produce specs through Socratic dialogue |
 | `implementer` | Code + tests from spec in one pass |
 | `refactorer` | Continuous debt reduction |
-| `code-reviewer` | Code quality and standards |
+| `spec-reviewer` | Validates implementation against spec (did we build what the spec says?) |
+| `code-reviewer` | Validates code quality and conventions (is the code well-written?) |
 | `test-writer` | Coverage gap filling after implementation |
+
+### Two-Stage Review
+
+Review is split into two independent passes:
+1. **Spec review** (spec-reviewer) — checks spec compliance: acceptance criteria, business rules, edge cases
+2. **Code review** (code-reviewer) — checks code quality: architecture, conventions, test quality, linters
+
+Both must pass before a feature is considered complete.
 
 ## Agent Instructions
 
 1. **Read the relevant spec** in `specs/` before implementing
 2. **Read files** before modifying them
 3. **If the spec is ambiguous, stop and ask** — do not guess
-4. **Run linters** after writing code: `bash scripts/lint_all.sh`
-5. When a linter fails, read the error — it contains the fix
-6. Keep changes small and focused on a single spec
-7. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
+4. **Plan approval is mandatory** — write the execution plan, wait for human approval, then implement
+5. **Run linters** after writing code: `bash scripts/lint_all.sh`
+6. When a linter fails, read the error — it contains the fix
+7. Keep changes small and focused on a single spec
+8. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
+9. Humans write zero application code — they write specs, review, and evolve the harness
 
 ## Key References
 
@@ -86,3 +101,4 @@ All linter errors include **remediation instructions**. Details: [docs/linters.m
 | Conventions | [docs/conventions.md](docs/conventions.md) |
 | Linter docs | [docs/linters.md](docs/linters.md) |
 | Spec system | [docs/spec-system.md](docs/spec-system.md) |
+| Git workflow | [docs/git-workflow.md](docs/git-workflow.md) |

@@ -43,6 +43,24 @@ Before writing anything, conduct a focused interview. Ask questions in small bat
    - Acceptance Criteria — confirm what "done" means
 7. Incorporate feedback, write final spec to `specs/features/<feature-name>.md`
 
+### Phase 3: Story Decomposition
+
+After the spec is approved:
+
+1. Break the feature spec into user stories using `.claude/templates/user_stories.md`
+2. Each story should be small enough to implement in one sitting (1-3 layers affected)
+3. Build the dependency graph — stories that create types/models come first
+4. Identify parallel groups — stories with no shared dependencies
+5. Write stories to `specs/stories/<feature-name>.md`
+6. Present the story map to the human for review
+
+### Phase 4: Architecture Update
+
+1. Read `specs/architecture.md`
+2. Add any new design decisions from this feature
+3. Update external integrations if the feature introduces new ones
+4. Update layer interactions if the feature changes data flow
+
 ## Interview Principles
 
 - **Ask, don't assume** — if the human says "users can search," ask what fields, what matching, what happens with no results
@@ -75,4 +93,5 @@ Before writing anything, conduct a focused interview. Ask questions in small bat
 
 ## Output
 
-A complete feature spec at `specs/features/[feature-name].md` that an implementer agent can execute without additional clarification.
+- A complete feature spec at `specs/features/[feature-name].md` that an implementer agent can execute without additional clarification.
+- A user stories file at `specs/stories/[feature-name].md` with dependency graph and parallel groups for implementation planning.

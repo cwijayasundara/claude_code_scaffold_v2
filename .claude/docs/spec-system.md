@@ -32,10 +32,11 @@ specs/features/*.md        ← one spec per feature
 
 ### Convergence
 
-Both tracks produce the same artifact: `specs/features/<name>.md`. From there, the workflow is identical:
+Both tracks produce the same artifact: `specs/features/<name>.md`. From there, the workflow continues:
 
 ```
-specs/features/<name>.md → implementer agent → src/ + tests/
+specs/features/<name>.md → spec-writer (stories) → specs/stories/<name>.md
+                         → implementer agent     → src/ + tests/
 ```
 
 ## Feature Spec Anatomy
@@ -58,9 +59,12 @@ Every spec in `specs/features/` follows the template at `.claude/templates/featu
 ## Spec-to-Code Traceability
 
 ```
-specs/features/auth.md         → src/service/auth.py
+specs/features/auth.md         → specs/stories/auth.md (user stories)
+                               → specs/tests/auth.md (test plan)
+                               → src/service/auth.py
                                → tests/unit/test_auth.py (# Spec: auth)
-specs/features/user-profile.md → src/service/user_profile.py
+specs/features/user-profile.md → specs/stories/user-profile.md
+                               → src/service/user_profile.py
                                → tests/unit/test_user_profile.py (# Spec: user-profile)
 ```
 
@@ -71,12 +75,13 @@ Enforced by:
 ## Spec Lifecycle
 
 ```
-draft → review → approved → implemented → verified
+draft → stories → review → approved → implemented → verified
 ```
 
 | Status | Meaning |
 |--------|---------|
 | draft | Initial creation, may have gaps |
+| stories | Decomposed into user stories in `specs/stories/` |
 | review | Ready for human review |
 | approved | Accepted, ready for implementation |
 | implemented | Code written and tests passing |

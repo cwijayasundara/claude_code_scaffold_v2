@@ -61,10 +61,10 @@ echo ""
 
 # ---- 5. Agents (5 expected) ----
 echo "5. Agents"
-for agent in code-reviewer test-writer; do
+for agent in test-writer; do
   if [[ -f ".claude/agents/$agent.yaml" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
-for agent in spec-writer implementer refactorer; do
+for agent in spec-writer implementer refactorer code-reviewer pr-writer; do
   if [[ -f ".claude/agents/$agent.md" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
 AGENT_COUNT=$(ls .claude/agents/ 2>/dev/null | wc -l | tr -d ' ')

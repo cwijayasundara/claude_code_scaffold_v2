@@ -1,0 +1,20 @@
+# Codex CLI project configuration
+# See: https://developers.openai.com/codex/config-reference/
+
+# Require approval for edits — Codex has no hooks, so approval policy
+# is the primary enforcement mechanism.
+approval_policy = "on-failure"
+
+# Restrict writes to project workspace
+sandbox_mode = "workspace-write"
+
+# Read full AGENTS.md (default 32KB is sufficient)
+project_doc_max_bytes = 32768
+
+# Codex does NOT support hooks. Enforcement relies on:
+# 1. AGENTS.md instructions (tells the agent to run linters)
+# 2. CI/CD pipeline (.github/workflows/ci.yml runs all linters)
+# 3. Approval policy above (human reviews before merge)
+#
+# To run linters manually after Codex writes code:
+#   bash .claude/lint_all.sh

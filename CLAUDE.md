@@ -29,7 +29,8 @@ Details: [.claude/docs/architecture.md](.claude/docs/architecture.md)
 **No manual code.** All code is agent-generated from specs. Humans write specs and review.
 
 ```
-SPEC (collaborative) → PLAN (agent) → APPROVE (human) → IMPLEMENT + TEST (agent) → SPEC REVIEW (agent) → CODE REVIEW (agent)
+SPEC → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+(collab.)  (agent)  (agent)  (human)   (agent)   (agent)  (agent)  (agent)
 ```
 
 **Plan approval is mandatory** — the agent writes the execution plan, the human reviews and approves it before any code is written.
@@ -53,13 +54,18 @@ All framework files live in `.claude/`. The project root stays clean for applica
 
 | Path | Purpose |
 |------|---------|
-| `.claude/agents/` | Sub-agent definitions |
+| `.claude/agents/` | Sub-agent definitions (7 agents) |
 | `.claude/docs/` | Framework documentation |
 | `.claude/hooks/` | Pre/post write hooks |
 | `.claude/linters/` | Custom linters |
-| `.claude/templates/` | Spec and plan templates |
+| `.claude/templates/` | Spec, plan, story, and test plan templates |
 | `.claude/scripts/` | Utility scripts (validate, init-from-spec) |
 | `.claude/lint_all.sh` | Master linter runner |
+| `specs/features/` | Feature specifications |
+| `specs/stories/` | User stories with dependency graphs |
+| `specs/plans/` | Execution plans (must be Approved) |
+| `specs/tests/` | Test plans per user story |
+| `specs/architecture.md` | Project-level technical design |
 
 ## Linters (5 custom)
 
@@ -75,24 +81,19 @@ Run all: `bash .claude/lint_all.sh`
 
 All linter errors include **remediation instructions**. Details: [.claude/docs/linters.md](.claude/docs/linters.md)
 
-## Agents (6)
+## Agents (7)
 
 | Agent | Role |
 |-------|------|
-| `spec-writer` | Brainstorming interviewer: collaborates with human to produce specs through Socratic dialogue |
-| `implementer` | Code + tests from spec in one pass |
+| `spec-writer` | Brainstorming interviewer: collaborates with human to produce specs and user stories |
+| `implementer` | Code + tests from spec, story-by-story or layer-by-layer |
 | `refactorer` | Continuous debt reduction |
 | `spec-reviewer` | Validates implementation against spec (did we build what the spec says?) |
-| `code-reviewer` | Validates code quality and conventions (is the code well-written?) |
+| `code-reviewer` | Validates code quality, conventions, security, and performance |
 | `test-writer` | Coverage gap filling after implementation |
+| `pr-writer` | Creates structured PRs with story-based commits |
 
-### Two-Stage Review
-
-Review is split into two independent passes:
-1. **Spec review** (spec-reviewer) — checks spec compliance: acceptance criteria, business rules, edge cases
-2. **Code review** (code-reviewer) — checks code quality: architecture, conventions, test quality, linters
-
-Both must pass before a feature is considered complete.
+**Two-stage review**: spec-reviewer (spec compliance) + code-reviewer (code quality) — both must pass.
 
 ## Agent Instructions
 
@@ -116,3 +117,4 @@ Both must pass before a feature is considered complete.
 | Linter docs | [.claude/docs/linters.md](.claude/docs/linters.md) |
 | Spec system | [.claude/docs/spec-system.md](.claude/docs/spec-system.md) |
 | Git workflow | [.claude/docs/git-workflow.md](.claude/docs/git-workflow.md) |
+| Onboarding | [.claude/docs/onboarding.md](.claude/docs/onboarding.md) |

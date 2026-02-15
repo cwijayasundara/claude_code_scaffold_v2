@@ -33,8 +33,8 @@ Retro:     Capture review insights as linter rules, doc updates, or agent instru
 ## Workflow Phases
 
 ```
-SPEC → PLAN → APPROVE → IMPLEMENT+TEST → SPEC REVIEW → CODE REVIEW
-(collab.)  (agent)  (human)     (agent)        (agent)       (agent)
+SPEC → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+(collab.)  (agent)  (agent)  (human)   (agent)   (agent)  (agent)  (agent)
 ```
 
 ## Dual-Track Spec System
@@ -70,7 +70,15 @@ The spec-writer agent interviews you to draw out requirements, then drafts the s
 cp .claude/templates/feature_spec.md specs/features/<name>.md
 ```
 
-### 2. Plan (Agent — mandatory, requires human approval)
+### 2. Stories (Agent — spec-writer)
+After the spec is approved, the spec-writer decomposes it into user stories:
+1. Break the spec into small, implementable stories using `.claude/templates/user_stories.md`
+2. Build a dependency graph — stories creating types/models come first
+3. Identify parallel groups — stories with no shared dependencies
+4. Write stories to `specs/stories/<feature-name>.md`
+5. Update `specs/architecture.md` with design decisions from this feature
+
+### 3. Plan (Agent — mandatory, requires human approval)
 The agent writes an execution plan. **No implementation begins until you approve the plan.**
 
 The plan includes:
@@ -78,25 +86,33 @@ The plan includes:
 - **Verification steps** for each task
 - **Milestones** grouping related tasks
 
-### 3. Implement + Test (Agent — implementer)
-The implementer writes both code and tests in a single pass, following the approved plan:
-1. Read the spec and approved execution plan
-2. Implement layer by layer: Types → Config → Repo → Service → Runtime → UI
-3. **Write tests alongside each layer**
-4. Run linters: `bash .claude/lint_all.sh`
-5. Run tests: `pytest tests/ --cov=src --cov-fail-under=80`
+### 4. Implement (Agent — implementer)
+The implementer writes code following the approved plan:
+1. Read the spec, stories, and approved execution plan
+2. If stories exist: implement story-by-story in dependency order, committing after each story
+3. If no stories: implement layer-by-layer (Types → Config → Repo → Service → Runtime → UI)
+4. Write tests alongside each story/layer
+5. Run linters: `bash .claude/lint_all.sh`
+6. Run tests: `pytest tests/ --cov=src --cov-fail-under=80`
 
-### 4. Coverage Gaps (Agent — test-writer, if needed)
-If coverage falls below 80% or acceptance criteria lack test coverage, the test-writer agent fills gaps.
+### 5. Test (Agent — test-writer, if needed)
+If coverage falls below 80% or acceptance criteria lack test coverage, the test-writer agent fills gaps using `.claude/templates/test_plan.md`.
 
-### 5. Refactor (Agent — refactorer)
+### 6. Refactor (Agent — refactorer)
 Clean up the implementation while keeping all tests green.
 
-### 6. Spec Review (Agent — spec-reviewer)
-Checks: Did we build what the spec says? Are all acceptance criteria met?
+### 7. Review (Agents — spec-reviewer + code-reviewer)
+Two independent passes:
+- **Spec review** (spec-reviewer) — Did we build what the spec says? Are all acceptance criteria met?
+- **Code review** (code-reviewer) — Is the code well-written? Does it follow conventions? Are there security or performance issues?
 
-### 7. Code Review (Agent — code-reviewer)
-Checks: Is the code well-written? Does it follow conventions?
+Both must pass before proceeding to PR.
+
+### 8. PR (Agent — pr-writer)
+After both reviews pass, the pr-writer agent creates a structured pull request:
+1. Organizes commits by story ID (`feat(US-XXX): <description>`)
+2. Pushes to remote on a feature branch
+3. Creates PR via `gh pr create` with summary, story table, test coverage, and checklist
 
 ## Feedback Loops — Evolving the Harness
 

@@ -46,6 +46,20 @@ gh pr create --title "feat: implement <spec-name>" --body "Spec: specs/features/
 git checkout main && git merge --no-ff feature/<spec-name> && git branch -d feature/<spec-name>
 ```
 
+### 5. Create PR (pr-writer agent)
+
+After both reviews pass, the pr-writer agent creates a structured PR:
+
+```bash
+# Automated via pr-writer agent
+# Or manually:
+gh pr create \
+  --title "feat: implement <spec-name>" \
+  --body "## Summary\n\n[description]\n\n**Spec**: specs/features/<spec-name>.md"
+```
+
+See `.claude/agents/pr-writer.md` for the full PR body template.
+
 ## Git Worktrees (for parallel features)
 
 When working on independent features simultaneously:
@@ -68,3 +82,13 @@ Spec: specs/features/<name>.md
 ```
 
 Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
+
+### Story-based commits (when user stories exist)
+
+```
+# Story-based commits (when user stories exist)
+feat(US-001): add user registration endpoint
+feat(US-002): add registration form UI
+test(US-001): add unit tests for registration service
+fix(US-003): handle duplicate email validation
+```

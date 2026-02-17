@@ -33,21 +33,22 @@ Every write to `src/` or `tests/` triggers automated quality checks:
 
 Run all linters manually: `bash .claude/lint_all.sh`
 
-## Spec-Driven Workflow (Recommended)
+## Request Routing (MANDATORY)
+
+**STOP. Before writing ANY code, classify the user's request and follow the matching action. Do NOT skip this step.**
+
+| Request pattern | REQUIRED action |
+|---|---|
+| "Build me ..." / "Create a ..." / "I want an app that ..." | **MUST** invoke the **spec-writer** agent first. It interviews the user, produces an app spec, decomposes into feature specs. **Do NOT explore the codebase, research libraries, or write a plan. Start the spec-writer interview immediately.** |
+| "Add feature X" / "Build X feature" / "Add X to the app" | **MUST** invoke the **spec-writer** agent first. It interviews the user and produces a feature spec. |
+| "Here's a spec for X" / user provides a spec | Verify the spec, create stories + plan, wait for human approval before implementing. |
+| "Fix bug in X" / "Refactor X" / "Add validation to X" | Fix directly — quality gates provide feedback automatically. |
+
+**Violation**: If you start writing code, exploring the codebase, or making a plan for a "Build me" / "Add feature" request without first running the spec-writer interview, you are violating this workflow.
 
 ```
 SPEC → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
 ```
-
-**When to use full SDLC**: New features, project bootstrap, large cross-cutting changes.
-**When to skip**: Bug fixes, refactoring, small improvements — just write code and let quality gates catch issues.
-
-| Request | Action |
-|---|---|
-| "Build me an app that..." / "Create a clone of X" | Invoke **spec-writer** agent — starts with **app spec** (whole application) |
-| "Add feature X" / "Build X feature" | Invoke **spec-writer** agent — starts with **feature spec** |
-| "Here's a spec for X" | Verify spec, create stories + plan, wait for approval |
-| "Fix bug in X" | Fix directly, or create a bug-fix spec for complex bugs |
 
 Details: [.claude/docs/workflow.md](.claude/docs/workflow.md)
 
@@ -82,16 +83,15 @@ Specs: `specs/` (`features/`, `stories/`, `plans/`).
 
 ## Agent Instructions
 
-1. **For new features**: use the spec-writer agent to create a spec first (recommended)
+1. **NEVER skip the routing table above** — if the user says "Build me X" or "Add feature X", you MUST invoke the spec-writer agent BEFORE doing anything else. No exploring, no researching, no planning — start the interview.
 2. **Read the relevant spec** in `specs/` before implementing (if one exists)
 3. **Read files** before modifying them
 4. **If the spec is ambiguous, stop and ask** — do not guess
-5. **Use Claude Code plan mode** for complex changes
-6. **Run linters** after writing code: `bash .claude/lint_all.sh`
-7. **Run tests** after implementation: `make test`
-8. When a linter fails, read the error — it contains the fix
-9. Keep changes small and focused
-10. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
+5. **Run linters** after writing code: `bash .claude/lint_all.sh`
+6. **Run tests** after implementation: `make test`
+7. When a linter fails, read the error — it contains the fix
+8. Keep changes small and focused
+9. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
 
 ## Key References
 

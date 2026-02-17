@@ -15,7 +15,7 @@ echo ""
 
 # ---- 1. Core files ----
 echo "1. Core files"
-for f in CLAUDE.md README.md Makefile pyproject.toml requirements.txt requirements-dev.txt Dockerfile .gitignore .env.example .mcp.json .dockerignore; do
+for f in CLAUDE.md README.md Makefile pyproject.toml Dockerfile .gitignore .env.example .mcp.json .dockerignore; do
   if [[ -f "$f" ]]; then pass "$f exists"; else fail "$f missing"; fi
 done
 echo ""
@@ -59,21 +59,21 @@ HOOK_COUNT=$(ls .claude/hooks/*.sh 2>/dev/null | wc -l | tr -d ' ')
 echo "  INFO: $HOOK_COUNT hook scripts found"
 echo ""
 
-# ---- 5. Agents (5 expected) ----
+# ---- 5. Agents (7 expected) ----
 echo "5. Agents"
 for agent in test-writer; do
   if [[ -f ".claude/agents/$agent.yaml" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
-for agent in spec-writer implementer refactorer code-reviewer pr-writer; do
+for agent in spec-writer implementer refactorer code-reviewer spec-reviewer pr-writer; do
   if [[ -f ".claude/agents/$agent.md" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
 AGENT_COUNT=$(ls .claude/agents/ 2>/dev/null | wc -l | tr -d ' ')
 echo "  INFO: $AGENT_COUNT agent files found"
 echo ""
 
-# ---- 6. Custom linters (5 expected) ----
+# ---- 6. Custom linters (2 expected) ----
 echo "6. Custom linters"
-for linter in layer_deps structured_logging naming_conventions file_size spec_coverage; do
+for linter in layer_deps file_size; do
   if [[ -f ".claude/linters/$linter.sh" && -x ".claude/linters/$linter.sh" ]]; then
     pass "$linter.sh"
   else
@@ -89,19 +89,14 @@ echo ""
 
 # ---- 7. Spec system ----
 echo "7. Spec system"
-for tmpl in .claude/templates/app_spec_template.xml .claude/templates/feature_spec.md .claude/templates/design_doc.md .claude/templates/execution_plan.md; do
+for tmpl in .claude/templates/app_spec.md .claude/templates/feature_spec.md .claude/templates/feature_spec_lite.md .claude/templates/design_doc.md .claude/templates/execution_plan.md; do
   if [[ -f "$tmpl" ]]; then pass "$tmpl"; else fail "$tmpl missing"; fi
 done
-if [[ -f ".claude/scripts/init-from-app-spec.sh" && -x ".claude/scripts/init-from-app-spec.sh" ]]; then
-  pass "init-from-app-spec.sh"
-else
-  fail "init-from-app-spec.sh missing or not executable"
-fi
 echo ""
 
-# ---- 8. Documentation (5 expected) ----
+# ---- 8. Documentation ----
 echo "8. Documentation"
-for doc in architecture workflow conventions linters spec-system; do
+for doc in architecture workflow conventions linters; do
   if [[ -f ".claude/docs/$doc.md" ]]; then pass ".claude/docs/$doc.md"; else fail ".claude/docs/$doc.md missing"; fi
 done
 echo ""

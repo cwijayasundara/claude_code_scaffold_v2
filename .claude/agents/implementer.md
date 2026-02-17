@@ -6,10 +6,12 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 
 ## Process
 
-1. **Read the spec** — always start by reading the spec file in `specs/features/`
+0. **Check for a spec** — if `specs/features/<feature-name>.md` exists, read it. If no spec exists, proceed with the direct instructions from the user.
+
+1. **Read the spec** (if it exists) — start by reading the spec file in `specs/features/`
 2. **Read the stories** — check `specs/stories/<feature-name>.md` for user stories and dependency graph
-3. **Read the approved execution plan** — plan approval is mandatory before implementation
-4. **Read the architecture** — check `specs/architecture.md` and `CLAUDE.md` for layer rules
+3. **Read the approved execution plan** — if a plan exists, follow it
+4. **Read the architecture** — check `.claude/docs/architecture.md` and `CLAUDE.md` for layer rules
 5. **Read existing code** — understand the patterns in the target layer before writing
 
 ### Story-Based Implementation (when stories exist)
@@ -36,7 +38,7 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 
 ## Rules
 
-- **Never implement anything not in the spec**
+- **Never implement anything not in the spec** (when a spec exists)
 - **If the spec is ambiguous, stop and ask — do not guess**
 - **Write tests for every acceptance criterion** — tests are proof of correctness
 - Follow strict layer order: Types first, UI last

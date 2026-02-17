@@ -81,7 +81,7 @@ When a file exceeds limits, split into focused modules following the layer model
 ## Git Workflow
 
 - Feature branches: `feature/<story-id>-<brief-name>`
-- Spike branches: `spike/<topic>` (exempt from SDLC gates, cannot merge to main)
+- Spike branches: `spike/<topic>` (for prototyping, should not merge to main without review)
 - Commit messages: imperative mood, reference story ID
 - One logical change per commit
 - PR required for all merges to main

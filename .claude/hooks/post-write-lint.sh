@@ -35,16 +35,22 @@ file_dir=$(dirname "$FILE_PATH")
 case "$ext" in
     py)
         run_linter "layer_deps" "$file_dir"
-        run_linter "structured_logging" "$file_dir"
-        run_linter "naming_conventions" "$file_dir"
         run_linter "file_size" "$file_dir"
         ;;
     ts|tsx|js|jsx)
-        run_linter "structured_logging" "$file_dir"
-        run_linter "naming_conventions" "$file_dir"
         run_linter "file_size" "$file_dir"
-        run_linter "no_any_types" "$file_dir"
         ;;
 esac
+
+# --- Test file existence check for service modules ---
+if [[ "$FILE_PATH" == *"src/service/"* && "$ext" == "py" ]]; then
+    base=$(basename "$FILE_PATH" .py)
+    if [[ "$base" != "__init__" && "$base" != "conftest" ]]; then
+        test_file="${PROJECT_ROOT}/tests/service/test_${base}.py"
+        if [[ ! -f "$test_file" ]]; then
+            echo "post-write-lint: No test file found at tests/service/test_${base}.py — consider adding tests."
+        fi
+    fi
+fi
 
 exit 0

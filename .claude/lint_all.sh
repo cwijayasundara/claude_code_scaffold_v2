@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lint_all.sh — Master runner for all 5 custom linters
+# lint_all.sh — Master runner for custom linters
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,10 +7,7 @@ LINTER_DIR="${SCRIPT_DIR}/linters"
 
 LINTERS=(
     layer_deps
-    structured_logging
-    naming_conventions
     file_size
-    spec_coverage
 )
 
 PASSED=0

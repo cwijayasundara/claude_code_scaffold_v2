@@ -25,7 +25,7 @@ format: ## Auto-fix lint issues
 	ruff check --fix src/ tests/
 	ruff format src/ tests/
 
-lint-custom: ## Run 5 custom linters (layer deps, naming, file size, etc.)
+lint-custom: ## Run custom linters (layer_deps, file_size)
 	bash .claude/lint_all.sh
 
 # ---- Tests ----

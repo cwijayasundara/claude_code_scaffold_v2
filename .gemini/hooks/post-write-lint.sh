@@ -1,1 +1,0 @@
-../../.claude/hooks/post-write-lint.sh

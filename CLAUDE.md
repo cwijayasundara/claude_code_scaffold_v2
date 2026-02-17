@@ -47,7 +47,7 @@ Run all linters manually: `bash .claude/lint_all.sh`
 **Violation**: If you start writing code, exploring the codebase, or making a plan for a "Build me" / "Add feature" request without first running the spec-writer interview, you are violating this workflow.
 
 ```
-SPEC → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+SPEC → STORIES → DESIGN → TEST PLAN → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
 ```
 
 Details: [.claude/docs/workflow.md](.claude/docs/workflow.md)
@@ -65,7 +65,7 @@ Details: [.claude/docs/conventions.md](.claude/docs/conventions.md)
 ## Scaffolding Structure
 
 Framework: `.claude/` (`agents/`, `docs/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
-Specs: `specs/` (`features/`, `stories/`, `plans/`).
+Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
 ## Agents (7)
 

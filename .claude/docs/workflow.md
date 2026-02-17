@@ -38,7 +38,7 @@ Quality gates run automatically on every write:
 For new applications, start with an app spec that captures the whole application before writing any code.
 
 ```
-APP SPEC → FEATURE SPECS → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+APP SPEC → FEATURE SPECS → STORIES → DESIGN → TEST PLAN → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
 ```
 
 ### 0. App Spec (Human + spec-writer agent)
@@ -56,7 +56,7 @@ The app spec goes to `specs/app_spec.md`. After approval, the spec-writer decomp
 For adding features to an existing application.
 
 ```
-SPEC → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+SPEC → STORIES → DESIGN → TEST PLAN → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
 ```
 
 ### 1. Spec (Human + spec-writer agent)
@@ -79,10 +79,28 @@ After the spec is approved, the spec-writer decomposes it into user stories:
 3. Identify parallel groups — stories with no shared dependencies
 4. Write stories to `specs/stories/<feature-name>.md`
 
-### 3. Plan (Agent — requires human approval)
+### 3. Design Doc (Agent — spec-writer)
+The spec-writer creates a design doc mapping the feature to the 6-layer architecture:
+1. Layer impact analysis — which layers are affected, what changes in each
+2. API contracts with request/response formats and error codes
+3. Data model changes — new or modified Pydantic models
+4. Sequence diagram showing data flow through layers
+5. Risks and mitigations
+6. Write to `specs/design/<feature-name>.md`, present to human for review
+
+### 4. Test Plan (Agent — spec-writer)
+The spec-writer creates a test plan with concrete test cases:
+1. Map each user story to specific test cases (TC-001, TC-002, etc.)
+2. Define test type for each case (unit, integration, e2e)
+3. Include concrete test data: valid inputs, invalid inputs, edge cases with exact values
+4. Define test fixtures with sample data
+5. Set coverage targets per scope
+6. Write to `specs/tests/<feature-name>.md`, present to human for review
+
+### 5. Plan (Agent — requires human approval)
 The agent writes an execution plan with small tasks, exact file paths, and verification steps. **No code is written until you approve the plan.**
 
-### 4. Implement (Agent — implementer)
+### 6. Implement (Agent — implementer)
 The implementer writes code following the approved plan:
 1. Read the spec, stories, and approved execution plan
 2. If stories exist: implement story-by-story in dependency order
@@ -91,17 +109,17 @@ The implementer writes code following the approved plan:
 5. Run linters: `bash .claude/lint_all.sh`
 6. Run tests: `pytest tests/ --cov=src --cov-fail-under=80`
 
-### 5. Test (Agent — test-writer, if needed)
+### 7. Test (Agent — test-writer, if needed)
 If coverage falls below 80% or acceptance criteria lack test coverage, the test-writer agent fills gaps.
 
-### 6. Review (Agents — spec-reviewer + code-reviewer)
+### 8. Review (Agents — spec-reviewer + code-reviewer)
 Two independent passes:
 - **Spec review** (spec-reviewer) — Did we build what the spec says?
 - **Code review** (code-reviewer) — Is the code well-written? Any security/performance issues?
 
 Both must pass before proceeding to PR.
 
-### 7. PR (Agent — pr-writer)
+### 9. PR (Agent — pr-writer)
 After both reviews pass, the pr-writer creates a structured pull request with story-based commits.
 
 ## Feedback Loops — Evolving the Harness

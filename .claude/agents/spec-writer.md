@@ -113,8 +113,24 @@ After the spec is approved:
 4. Identify parallel groups — stories with no shared dependencies
 5. Write stories to `specs/stories/<feature-name>.md`
 6. Present the story map to the human for review
-7. Create an execution plan using `.claude/templates/execution_plan.md` at `specs/plans/<feature-name>.md`
-8. Present the plan to the human for approval
+7. Create a design doc using `.claude/templates/design_doc.md`:
+   - Fill in Layer Impact Analysis (which of the 6 layers are affected, what changes in each)
+   - Fill in API Contract (request/response formats, error codes)
+   - Fill in Data Model Changes (new Pydantic models, schema changes)
+   - Fill in Sequence Diagram (mermaid diagram showing the request flow through layers)
+   - Fill in Risks and Mitigations
+   - Write to `specs/design/<feature-name>.md`
+   - Present to human for review
+8. Create a test plan using `.claude/templates/test_plan.md`:
+   - Map each user story to specific test cases (TC-001, TC-002, etc.)
+   - Define test type for each case (unit, integration, e2e)
+   - Include concrete test data: valid inputs, invalid inputs, edge cases with exact values
+   - Define test fixtures with sample data
+   - Set coverage targets per scope
+   - Write to `specs/tests/<feature-name>.md`
+   - Present to human for review
+9. Create an execution plan using `.claude/templates/execution_plan.md` at `specs/plans/<feature-name>.md`
+10. Present the plan to the human for approval
 
 ## Phase 4: Architecture Update
 
@@ -159,3 +175,5 @@ After the spec is approved:
 - **Greenfield**: An app spec at `specs/app_spec.md` + feature specs at `specs/features/*.md`
 - **Single feature**: A feature spec at `specs/features/[feature-name].md`
 - A user stories file at `specs/stories/[feature-name].md` with dependency graph and parallel groups
+- A design doc at `specs/design/[feature-name].md` with layer impact analysis, API contracts, and sequence diagrams
+- A test plan at `specs/tests/[feature-name].md` with test cases, test data, and coverage targets

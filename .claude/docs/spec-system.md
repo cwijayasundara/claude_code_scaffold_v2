@@ -63,9 +63,15 @@ The full template adds: Motivation, Technology Context, Data Model, API Endpoint
 
 ```
 specs/features/auth.md         → specs/stories/auth.md (user stories)
+                               → specs/design/auth.md (design doc)
+                               → specs/tests/auth.md (test plan)
+                               → specs/plans/auth.md (execution plan)
                                → src/service/auth.py
                                → tests/unit/test_auth.py
 specs/features/user-profile.md → specs/stories/user-profile.md
+                               → specs/design/user-profile.md
+                               → specs/tests/user-profile.md
+                               → specs/plans/user-profile.md
                                → src/service/user_profile.py
                                → tests/unit/test_user_profile.py
 ```

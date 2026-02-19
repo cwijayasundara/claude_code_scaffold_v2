@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate the Claude Code Production Scaffold v2 structure."""
+import json
 import sys
 from pathlib import Path
 
@@ -200,6 +201,66 @@ def main() -> None:
     release_yml = Path(".github/workflows/release.yml")
     if release_yml.exists():
         pass_("release.yml exists")
+    print()
+
+    # ---- 12. Hook behavior: pre_read_scaffold_guard ----
+    print("12. Hook behavior: pre_read_scaffold_guard")
+    hook_path = Path(".claude/hooks/pre_read_scaffold_guard.py")
+    if hook_path.exists():
+        import subprocess
+
+        # Subagent + scaffold file → must exit 2 (blocked)
+        subagent_scaffold = json.dumps({
+            "tool_input": {"file_path": ".claude/docs/pipeline.md"},
+            "transcript_path": "/tmp/abc/subagents/agent-xyz.jsonl",
+        })
+        result = subprocess.run(
+            [sys.executable, str(hook_path)],
+            input=subagent_scaffold, capture_output=True, text=True,
+        )
+        if result.returncode == 2:
+            pass_("subagent + scaffold → exit 2 (blocked)")
+        else:
+            fail_(
+                f"subagent + scaffold → exit {result.returncode}"
+                " (expected 2)"
+            )
+
+        # Main conversation + scaffold file → must exit 0 (allowed)
+        main_scaffold = json.dumps({
+            "tool_input": {"file_path": ".claude/docs/pipeline.md"},
+            "transcript_path": "/tmp/abc123.jsonl",
+        })
+        result = subprocess.run(
+            [sys.executable, str(hook_path)],
+            input=main_scaffold, capture_output=True, text=True,
+        )
+        if result.returncode == 0:
+            pass_("main conv + scaffold → exit 0 (allowed)")
+        else:
+            fail_(
+                f"main conv + scaffold → exit {result.returncode}"
+                " (expected 0)"
+            )
+
+        # Subagent + non-scaffold file → must exit 0 (allowed)
+        subagent_src = json.dumps({
+            "tool_input": {"file_path": "src/service/auth.py"},
+            "transcript_path": "/tmp/abc/subagents/agent-xyz.jsonl",
+        })
+        result = subprocess.run(
+            [sys.executable, str(hook_path)],
+            input=subagent_src, capture_output=True, text=True,
+        )
+        if result.returncode == 0:
+            pass_("subagent + non-scaffold → exit 0 (allowed)")
+        else:
+            fail_(
+                f"subagent + non-scaffold → exit {result.returncode}"
+                " (expected 0)"
+            )
+    else:
+        fail_("pre_read_scaffold_guard.py not found, cannot test")
     print()
 
     # ---- Summary ----

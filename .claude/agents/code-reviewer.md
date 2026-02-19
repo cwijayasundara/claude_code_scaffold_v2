@@ -39,6 +39,7 @@ You do not check spec compliance — that is the spec-reviewer's job.
 - [ ] Function naming: snake_case
 - [ ] Class naming: PascalCase
 - [ ] Structured logging used (no raw print)
+- [ ] Every module in `src/service/`, `src/repo/`, `src/runtime/`, `src/ui/` has `logger = logging.getLogger(__name__)` at module level
 - [ ] File size within 300 lines
 - [ ] Function size within 50 lines
 - [ ] Refined Pydantic types for domain concepts
@@ -49,13 +50,15 @@ You do not check spec compliance — that is the spec-reviewer's job.
 - [ ] Context logged before re-raising
 - [ ] Error types appropriate for the layer
 
-### Test Quality
+### Test Quality (per `.claude/docs/testing-standard.md`)
 
 - [ ] Every service function has a corresponding test
 - [ ] Edge cases covered
 - [ ] Tests are isolated (no shared mutable state)
-- [ ] Test naming follows convention
+- [ ] Test naming follows `test_<function>_<scenario>_<outcome>` convention
 - [ ] Coverage >= 80%
+- [ ] No duplicate fixtures or duplicate test coverage across files
+- [ ] No vacuous assertions (`is not None`, bare truthiness) — MAJOR severity
 
 ### Security
 
@@ -94,6 +97,11 @@ You do not check spec compliance — that is the spec-reviewer's job.
 - Security violations are always CRITICAL severity
 - Performance issues are MAJOR severity
 - Reject if any CRITICAL or MAJOR issue is found
+- Vacuous test assertions are MAJOR severity — tests that don't verify behavior give false confidence
+
+## Calibration
+
+Reviewer eval samples are maintained in `.claude/evals/code-reviewer/`. Before modifying this agent's checklist, run `bash .claude/scripts/run-reviewer-evals.sh` to verify the reviewer still catches known-bad patterns and approves known-good code.
 
 ## Allowed Tools
 

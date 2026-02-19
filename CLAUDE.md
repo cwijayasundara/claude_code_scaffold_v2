@@ -68,13 +68,13 @@ Details: [.claude/docs/pipeline.md](.claude/docs/pipeline.md) | [.claude/docs/wo
 - **Logging**: Structured only — no raw `print()` or `console.log()`
 - **File size**: Max 300 lines/file, 50 lines/function
 - **Types**: Refined Pydantic types for domain concepts — no raw `str`/`int` for IDs, emails, etc.
-- **Tests**: Every service function needs a test in `tests/` mirroring `src/`. Coverage minimum: 80%
+- **Tests**: Coverage 80%, no vacuous assertions, fixture reuse — see [testing-standard](.claude/docs/testing-standard.md)
 
-Details: [.claude/docs/conventions.md](.claude/docs/conventions.md)
+Details: [.claude/docs/conventions.md](.claude/docs/conventions.md) | [.claude/docs/testing-standard.md](.claude/docs/testing-standard.md)
 
 ## Scaffolding Structure
 
-Framework: `.claude/` (`agents/`, `docs/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
+Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
 Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
 ## Agents (9)
@@ -110,4 +110,4 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
 ## Key References
 
-Docs: [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)
+Docs: [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)

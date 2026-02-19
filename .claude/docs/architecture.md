@@ -97,11 +97,4 @@ structure, they can reason about the full business domain directly from the repo
 
 ## Testing Strategy Per Layer
 
-| Layer   | Test Type        | Mock Strategy                                     |
-|---------|------------------|---------------------------------------------------|
-| Types   | Unit             | None (pure data structures)                       |
-| Config  | Unit             | Mock environment variables                        |
-| Repo    | Unit+Integration | Mock DB (unit), SQLite in-memory (integration)    |
-| Service | Unit             | Mock repo dependencies                            |
-| Runtime | Integration      | TestClient with mocked services                   |
-| UI      | Integration+E2E  | TestClient (integration), Playwright (E2E)        |
+See `.claude/docs/testing-standard.md` for the full mock strategy table, test organization, fixture rules, and assertion standards.

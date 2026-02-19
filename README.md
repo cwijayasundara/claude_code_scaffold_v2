@@ -45,10 +45,11 @@ This scaffold gives your agents a production-grade harness:
 │  │  │  │  layer_deps.sh — forward-only layer imports      │  │  │  │
 │  │  │  │  file_size.sh  — max 300 lines/file, 50/func    │  │  │  │
 │  │  │  │  ┌─────────────────────────────────────────────┐ │  │  │  │
-│  │  │  │  │          Templates (8)                      │ │  │  │  │
+│  │  │  │  │     Templates (8) + Reviewer Evals (6)     │ │  │  │  │
 │  │  │  │  │  app_spec | feature_spec | feature_lite    │ │  │  │  │
 │  │  │  │  │  design_doc | execution_plan | stories     │ │  │  │  │
 │  │  │  │  │  test_plan | pipeline_status               │ │  │  │  │
+│  │  │  │  │  .claude/evals/ (reviewer calibration)       │ │  │  │  │
 │  │  │  │  └─────────────────────────────────────────────┘ │  │  │  │
 │  │  │  └───────────────────────────────────────────────────┘  │  │  │
 │  │  └─────────────────────────────────────────────────────────┘  │  │
@@ -265,7 +266,8 @@ This scaffold gives your agents a production-grade harness:
 | **Custom linters** | 2 | Architecture (layer_deps) and file size enforcement |
 | **Hooks** | 3 | Real-time advisory checks on every file write |
 | **Templates** | 8 | App spec, feature specs (full + lite), plans, stories, test plans, design docs, pipeline status |
-| **Framework docs** | 8 | Pipeline, workflow, architecture, conventions, linters, spec-system, git-workflow, onboarding |
+| **Reviewer evals** | 6 | Known-good and known-bad code samples for calibrating code-reviewer accuracy |
+| **Framework docs** | 9 | Pipeline, workflow, architecture, conventions, testing-standard, linters, spec-system, git-workflow, onboarding |
 | **CI/CD** | 2 | GitHub Actions for linting, testing, and E2E on every push |
 
 **Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy, Playwright. Coverage enforced at 80% minimum.
@@ -282,17 +284,20 @@ cd my-project
 # 2. Validate scaffold integrity
 bash .claude/scripts/validate-scaffold.sh
 
-# 3. Install dependencies
+# 3. Validate reviewer eval samples
+bash .claude/scripts/run-reviewer-evals.sh
+
+# 4. Install dependencies
 make build
 
-# 4. Write a feature spec (or use the spec-writer agent)
+# 5. Write a feature spec (or use the spec-writer agent)
 cp .claude/templates/feature_spec_lite.md specs/features/my-feature.md
 
-# 5. Open your AI coding tool and implement
+# 6. Open your AI coding tool and implement
 # Claude Code: claude
 # Tell the agent: "Implement the feature spec at specs/features/my-feature.md"
 
-# 6. Verify
+# 7. Verify
 bash .claude/lint_all.sh   # Custom linters
 make test                  # Unit + integration tests
 ```
@@ -307,6 +312,8 @@ make test                  # Unit + integration tests
 4. **Evolve the harness** — When agents make mistakes, fix linter rules, agent instructions, or templates
 
 **You write zero lines of application code.** When something goes wrong, don't fix the code — fix the harness.
+
+5. **Calibrate reviewers** — maintain eval samples in `.claude/evals/` so reviewer agents stay accurate as rules evolve
 
 ---
 
@@ -338,7 +345,7 @@ SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT �
 5. The **implementer** agent(s) build from the plan (teams for parallel stories)
 6. The **test-writer** fills coverage gaps, **e2e-writer** generates Playwright tests
 7. The **devops** agent generates CI/CD, Dockerfile, and deployment configs
-8. **spec-reviewer** + **code-reviewer** validate (auto-loop on failures)
+8. **spec-reviewer** + **code-reviewer** validate (auto-loop on failures, calibrated against eval samples)
 9. **You approve for PR** (checkpoint 2)
 10. The **pr-writer** creates a structured PR with story-based commits
 
@@ -428,6 +435,28 @@ make test              # Run unit + integration tests
 make ci                # Full CI suite: lint + custom linters + tests
 make validate          # Validate scaffold integrity
 ```
+
+---
+
+## Reviewer Calibration (Evals)
+
+The code-reviewer agent is calibrated against known-good and known-bad code samples in `.claude/evals/code-reviewer/`. This ensures the reviewer catches the patterns it should and approves code that follows conventions.
+
+```
+.claude/evals/code-reviewer/
+  good/                  # Should get APPROVE verdict
+    clean_service.py     # Proper logging, types, layer imports
+    clean_tests.py       # Meaningful assertions, spec references
+  bad/                   # Should get REQUEST_CHANGES verdict
+    missing_logger.py    # print() instead of structured logging
+    backward_import.py   # Types layer importing from Service
+    vacuous_tests.py     # assert result is not None (no real verification)
+    bare_except.py       # Bare except: with no context
+```
+
+Each sample includes metadata comments documenting the expected verdict, expected findings, and which conventions it tests. When modifying reviewer rules, run `bash .claude/scripts/run-reviewer-evals.sh` to verify the eval inventory, then invoke the code-reviewer against samples to check for regressions.
+
+To add a new eval: create a `.py` file in the appropriate directory with `Expected reviewer verdict:` and `Violations:` (or `Conventions demonstrated:`) comments.
 
 ---
 

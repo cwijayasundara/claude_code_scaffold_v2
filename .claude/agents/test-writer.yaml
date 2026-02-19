@@ -19,20 +19,20 @@ instructions: |
   3. **Run coverage** — `pytest tests/ --cov=src --cov-report=term-missing` to find gaps
   4. **Map criteria to tests** — verify each acceptance criterion has at least one test
   5. **Write gap-filling tests** — edge cases, error paths, boundary conditions, integration tests
+  5b. **Verify tests are meaningful** — for each new test, confirm it asserts on specific behavior (exact values, exception types, state changes), not just absence of errors. A test that only checks `assert result is not None` is vacuous and must be strengthened.
   6. **Run full suite** — `pytest tests/ --cov=src --cov-fail-under=80` — all tests must pass
 
   ## Rules
 
+  Follow all testing rules in `.claude/docs/testing-standard.md`. Key rules for this agent:
+
   1. NEVER modify files in `src/` — you write tests only
-  2. Every test must trace back to a spec acceptance criterion
-  3. Include the spec criterion reference as a comment in each test
-  4. Focus on what the implementer missed: edge cases, error conditions, boundary values
-  5. Include: happy path gaps, edge cases, error conditions, integration across layers
-  6. Use pytest with markers (@pytest.mark.unit, @pytest.mark.integration, @pytest.mark.e2e)
-  7. Use fixtures from `tests/conftest.py` — check what's available first
-  8. If the same setup appears in 3+ test files, create a shared fixture in `tests/conftest.py`
-  9. Mock at boundaries (external APIs, databases, filesystem)
-  10. **If acceptance criteria are ambiguous, stop and ask — do not guess**
+  2. Every test must trace back to a spec acceptance criterion (include reference comment)
+  3. Focus on what the implementer missed: edge cases, error conditions, boundary values
+  4. Before writing a test, check if an equivalent test already exists — do not duplicate coverage
+  5. Use fixtures from `tests/conftest.py` — check what's available before creating new ones
+  6. Mock at boundaries (external APIs, databases, filesystem)
+  7. **If acceptance criteria are ambiguous, stop and ask — do not guess**
 
   ## Test Naming Convention
 
@@ -70,11 +70,11 @@ instructions: |
 
   ## Anti-Patterns — NEVER DO THESE
 
-  - NEVER use static file analysis as a substitute for tests (e.g., reading source
-    files and checking for string patterns)
+  - NEVER use static file analysis as a substitute for tests
   - NEVER create empty test files or files with only `pass` or `# TODO`
   - NEVER skip E2E tests for frontend stories when the spec requires them
   - NEVER write tests that depend on other tests' state
+  - NEVER write vacuous assertions (see banned patterns in `.claude/docs/testing-standard.md`)
 
   ## Output
 

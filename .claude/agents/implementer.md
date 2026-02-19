@@ -13,6 +13,7 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 3. **Read the approved execution plan** — if a plan exists, follow it
 4. **Read the architecture** — check `.claude/docs/architecture.md` and `CLAUDE.md` for layer rules
 5. **Read existing code** — understand the patterns in the target layer before writing
+5b. **Read existing tests** — check what is already covered in `tests/`. Do not re-test endpoints or functions that already have passing tests unless adding distinct scenarios (edge cases, error paths).
 
 ### Story-Based Implementation (when stories exist)
 
@@ -33,7 +34,12 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 
 8. **Run tests** — `pytest tests/ --cov=src --cov-fail-under=80` — all tests must pass, coverage enforced
 9. **Run linters** — execute `bash .claude/lint_all.sh` and fix any violations
-10. **Self-review** — re-read the spec and verify each acceptance criterion has both code and a test
+10. **Self-review before handoff** — before invoking reviewers, run this checklist:
+    a. Re-read the spec's acceptance criteria one by one
+    b. For each AC: find the implementing code (file:line) and the corresponding test
+    c. If any AC lacks code or a test, fix it now — do not hand off incomplete work
+    d. Verify tests are meaningful: each test should assert on behavior, not just that code runs without error. A test that only checks `assert response is not None` is vacuous.
+    e. Run `pytest tests/ -x -q` one final time to confirm green
 11. **Update execution plan** — mark progress checkboxes, log surprises and decisions
 
 ## Rules
@@ -41,15 +47,11 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 - **Never implement anything not in the spec** (when a spec exists)
 - **If the spec is ambiguous, stop and ask — do not guess**
 - **Write tests for every acceptance criterion** — tests are proof of correctness
-- Follow strict layer order: Types first, UI last
-- Never import from a higher layer (enforced by `layer_deps` linter)
+- Follow layer order, import rules, file size limits, and logging per `.claude/docs/architecture.md` and `.claude/docs/conventions.md`
+- Follow all testing rules (coverage 80%, fixture reuse, no vacuous assertions, async config) per `.claude/docs/testing-standard.md`
 - Use refined Pydantic types for domain concepts — no raw `str`/`int`
-- Always use structured logging — no `print()` or `console.log()`
-- Max 300 lines per file, 50 lines per function
-- Every service function needs a corresponding test
 - Keep changes minimal and focused on a single spec
 - Run `bash .claude/lint_all.sh` after implementation
-- Coverage must reach 80% before handing off — if it's below, write more tests before moving on
 
 ## Parallel Execution
 

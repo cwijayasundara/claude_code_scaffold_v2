@@ -96,7 +96,7 @@ echo ""
 
 # ---- 8. Documentation ----
 echo "8. Documentation"
-for doc in architecture workflow conventions linters pipeline; do
+for doc in architecture workflow conventions linters pipeline testing-standard; do
   if [[ -f ".claude/docs/$doc.md" ]]; then pass ".claude/docs/$doc.md"; else fail ".claude/docs/$doc.md missing"; fi
 done
 echo ""
@@ -115,8 +115,25 @@ if [[ -f ".claude/settings.json" ]]; then
 fi
 echo ""
 
-# ---- 10. CI pipeline ----
-echo "10. CI pipeline"
+# ---- 10. Reviewer evals ----
+echo "10. Reviewer evals"
+if [[ -d ".claude/evals/code-reviewer/good" ]]; then
+  pass ".claude/evals/code-reviewer/good/ exists"
+else
+  warn ".claude/evals/code-reviewer/good/ missing (optional)"
+fi
+if [[ -d ".claude/evals/code-reviewer/bad" ]]; then
+  pass ".claude/evals/code-reviewer/bad/ exists"
+else
+  warn ".claude/evals/code-reviewer/bad/ missing (optional)"
+fi
+GOOD_EVAL_COUNT=$(find .claude/evals/code-reviewer/good -name "*.py" 2>/dev/null | wc -l | tr -d ' ')
+BAD_EVAL_COUNT=$(find .claude/evals/code-reviewer/bad -name "*.py" 2>/dev/null | wc -l | tr -d ' ')
+echo "  INFO: $GOOD_EVAL_COUNT good eval(s), $BAD_EVAL_COUNT bad eval(s)"
+echo ""
+
+# ---- 11. CI pipeline ----
+echo "11. CI pipeline"
 if [[ -f ".github/workflows/ci.yml" ]]; then
   pass "ci.yml exists"
   if grep -q "lint_all.sh" .github/workflows/ci.yml; then pass "CI runs custom linters"; else fail "CI missing linters"; fi

@@ -11,6 +11,7 @@
 
 ### Type Hints
 - All function signatures must have type annotations
+- This applies to all Python code including test functions, fixtures, and E2E tests — not just `src/`
 - No `Any` type — use specific types or Generics
 - Use `TypeVar` for generic functions
 - Use `Protocol` for structural typing

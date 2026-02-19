@@ -58,7 +58,7 @@ SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT �
 2. **Update `specs/pipeline_status.md`** after each phase (copy template from `.claude/templates/pipeline_status.md` if it doesn't exist)
 3. **Wait for human approval** at two checkpoints: before implementation and before PR
 4. **Loop on review failures** — if spec-review or code-review fails, re-invoke implementer, then re-review (max 3 cycles)
-5. **Use teams for parallel stories** — when 4+ stories with 2+ parallel groups, create a team with implementer agents per group
+5. **Use teams for parallel stories (mandatory)** — when 4+ stories AND 2+ parallel groups, you MUST create a team with implementer agents per group. This is a mechanical threshold, not a judgment call — count stories and groups, then follow the rule.
 
 Details: [.claude/docs/pipeline.md](.claude/docs/pipeline.md) | [.claude/docs/workflow.md](.claude/docs/workflow.md)
 
@@ -98,7 +98,7 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 1. **NEVER skip the routing table above** — if the user says "Build me X" or "Add feature X", you MUST invoke the spec-writer agent BEFORE doing anything else. No exploring, no researching, no planning — start the interview.
 2. **After spec-writer completes, continue the pipeline** — do NOT stop after producing specs. Follow [pipeline.md](.claude/docs/pipeline.md) through all remaining phases automatically.
 3. **Track progress** — update `specs/pipeline_status.md` after each phase completes
-4. **Use teams for parallel implementation** — when 4+ stories with 2+ parallel groups, use TeamCreate and spawn implementer agents
+4. **Use teams for parallel implementation (mandatory)** — when 4+ stories AND 2+ parallel groups, you MUST use TeamCreate and spawn implementer agents. Count the stories and parallel groups mechanically — do not skip teams based on story size or complexity.
 5. **Read the relevant spec** in `specs/` before implementing (if one exists)
 6. **Read files** before modifying them
 7. **If the spec is ambiguous, stop and ask** — do not guess

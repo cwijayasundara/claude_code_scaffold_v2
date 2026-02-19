@@ -77,10 +77,11 @@ The spec-writer handles phases 1-5 in sequence. Do not interrupt it.
 **Input**: Spec, stories, design, execution plan
 **Output**: `src/` code + `tests/` unit/integration tests
 
-**Team orchestration** (when applicable):
-1. Read the stories file for parallel groups
-2. If 4+ stories AND 2+ parallel groups → use team orchestration (see below)
-3. Otherwise → invoke a single implementer agent
+**Team orchestration check** (MANDATORY — do not skip):
+1. Read the stories file and count the total number of stories
+2. Count the number of parallel groups listed in the "Parallel Groups" section
+3. If story count >= 4 AND parallel group count >= 2 → you MUST use team orchestration (see Team Orchestration Protocol below). Do NOT override this based on story size, complexity, or subjective judgment.
+4. Otherwise (fewer than 4 stories OR only 1 parallel group) → invoke a single implementer agent
 
 After implementation:
 - Run `bash .claude/lint_all.sh` — all linters must pass
@@ -144,7 +145,7 @@ After implementation:
 
 ## Team Orchestration Protocol
 
-Use teams when: **4+ stories AND 2+ parallel groups** in the stories file.
+**MUST** use teams when: **4+ stories AND 2+ parallel groups** in the stories file. This is a mechanical check — count the stories and groups, then follow the rule. Do not substitute your own judgment about whether stories are "too small" or "mostly sequential."
 
 ### Setup (main conversation does this)
 
@@ -162,10 +163,12 @@ Use teams when: **4+ stories AND 2+ parallel groups** in the stories file.
 
 ### Sequential Fallback
 
-Use sequential implementation (single implementer agent) when:
-- Fewer than 4 stories
-- Only 1 parallel group (all stories are dependent)
-- Team setup fails
+Use sequential implementation (single implementer agent) **only** when:
+- Fewer than 4 stories, OR
+- Only 1 parallel group (all stories form a single dependency chain), OR
+- Team setup fails (after attempting team orchestration first)
+
+**Common mistake**: An agent may rationalize skipping teams by saying stories are "small" or "mostly sequential." This is not a valid reason. The threshold is purely mechanical: count stories, count parallel groups. If both thresholds are met, use teams.
 
 ## Error Recovery
 

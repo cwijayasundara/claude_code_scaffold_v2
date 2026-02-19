@@ -43,7 +43,7 @@ Generate Playwright E2E tests and API contract tests from the test plan's E2E se
 ### Finalize
 
 7. **Run E2E tests** — `pytest tests/e2e/ -m e2e -v`
-8. **Run linters** — `bash .claude/lint_all.sh`
+8. **Run linters** — `python3 .claude/lint_all.py`
 9. **Verify coverage** — every E2E test case from the test plan has a corresponding test
 
 ## Fixture Template

@@ -20,7 +20,7 @@ Types → Config → Repo → Service → Runtime → UI
 | Runtime | `src/runtime/` | Server bootstrap, middleware       |
 | UI      | `src/ui/`      | Presentation, CLI, user-facing     |
 
-Backward imports are **forbidden** and enforced by `.claude/linters/layer_deps.sh`.
+Backward imports are **forbidden** and enforced by `.claude/linters/layer_deps.py`.
 Details: [.claude/docs/architecture.md](.claude/docs/architecture.md)
 
 ## Quality Gates (Always Active)
@@ -29,9 +29,9 @@ Every write to `src/` or `tests/` triggers automated quality checks:
 
 - **Pre-write reminders**: Layer import rules, spec suggestions for new service modules, test reminders
 - **Post-write linters**: `layer_deps` (architecture), `file_size` (max 300 lines/file, 50 lines/function)
-- **CI enforcement**: `bash .claude/lint_all.sh` + `make test` on every push
+- **CI enforcement**: `python3 .claude/lint_all.py` + `make test` on every push
 
-Run all linters manually: `bash .claude/lint_all.sh`
+Run all linters manually: `python3 .claude/lint_all.py`
 
 ## Request Routing (MANDATORY)
 
@@ -102,7 +102,7 @@ Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `temp
 5. **Read the relevant spec** in `specs/` before implementing (if one exists)
 6. **Read files** before modifying them
 7. **If the spec is ambiguous, stop and ask** — do not guess
-8. **Run linters** after writing code: `bash .claude/lint_all.sh`
+8. **Run linters** after writing code: `python3 .claude/lint_all.py`
 9. **Run tests** after implementation: `make test`
 10. When a linter fails, read the error — it contains the fix
 11. Keep changes small and focused
@@ -110,7 +110,6 @@ Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `temp
 
 ## Key References
 
-> **Exploration protocol**: To understand this scaffold, read `.claude/docs/scaffold-overview.md` — it consolidates all docs into one file.
-> Do NOT broadly explore `.claude/` or read README.md. Only read individual `.claude/docs/` files when working on a specific phase.
+> **SUBAGENT RULE**: When spawning Explore/Plan agents, NEVER ask them to read `.claude/` or README.md. You already know the scaffold from this file. Restrict subagent prompts to `src/`, `tests/`, `specs/`, and config files only. If a subagent needs scaffold context, paste the relevant section from this file into its prompt.
 
-Detailed docs (read on demand): [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)
+Docs (read on demand): [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)

@@ -32,8 +32,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/pre-write-check.sh",
+            "command": "python3 .claude/hooks/pre_write_check.py",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pre_read_scaffold_guard.py",
+            "timeout": 5
           }
         ]
       }
@@ -44,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/post-write-lint.sh",
+            "command": "python3 .claude/hooks/post_write_lint.py",
             "timeout": 30
           }
         ]
@@ -55,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/post-commit-spec-check.sh",
+            "command": "python3 .claude/hooks/post_commit_spec_check.py",
             "timeout": 30
           }
         ]

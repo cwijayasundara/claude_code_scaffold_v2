@@ -39,11 +39,11 @@ Add quality guardrails on top of Tier 2.
 
 **Copy from this scaffold**:
 - `.claude/hooks/` + `.claude/settings.json` — advisory hooks for real-time feedback
-- `.claude/linters/` + `.claude/lint_all.sh` — custom linters
+- `.claude/linters/` + `.claude/lint_all.py` — custom linters
 
 **Customize**:
-- `layer_deps.sh` — edit layer definitions to match your architecture, or remove if not applicable
-- `file_size.sh` — adjust limits if 300 lines/file is too strict
+- `layer_deps.py` — edit layer definitions to match your architecture, or remove if not applicable
+- `file_size.py` — adjust limits if 300 lines/file is too strict
 
 **What you get**: Automated quality guardrails that provide continuous feedback on your conventions.
 

@@ -84,7 +84,7 @@ The spec-writer handles phases 1-5 in sequence. Do not interrupt it.
 4. Otherwise (fewer than 4 stories OR only 1 parallel group) → invoke a single implementer agent
 
 After implementation:
-- Run `bash .claude/lint_all.sh` — all linters must pass
+- Run `python3 .claude/lint_all.py` — all linters must pass
 - Run `pytest tests/ --cov=src --cov-fail-under=80` — all tests must pass
 
 **Gate**: All linters pass, all tests pass, coverage >= 80%

@@ -21,7 +21,7 @@ jobs:
       - name: Mypy
         run: mypy src/ --ignore-missing-imports
       - name: Custom linters
-        run: bash .claude/lint_all.sh
+        run: python3 .claude/lint_all.py
 
   test:
     runs-on: ubuntu-latest

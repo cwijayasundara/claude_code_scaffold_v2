@@ -35,7 +35,7 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 ### Finalize
 
 8. **Run tests** — `pytest tests/ --cov=src --cov-fail-under=80` — all tests must pass, coverage enforced
-9. **Run linters** — execute `bash .claude/lint_all.sh` and fix any violations
+9. **Run linters** — execute `python3 .claude/lint_all.py` and fix any violations
 10. **Self-review before handoff** — before invoking reviewers, run this checklist:
     a. Re-read the spec's acceptance criteria one by one
     b. For each AC: find the implementing code (file:line) and the corresponding test
@@ -53,7 +53,7 @@ Write code **and tests** from the spec in a single pass. Every acceptance criter
 - Follow all testing rules (coverage 80%, fixture reuse, no vacuous assertions, async config) per `.claude/docs/testing-standard.md`
 - Use refined Pydantic types for domain concepts — no raw `str`/`int`
 - Keep changes minimal and focused on a single spec
-- Run `bash .claude/lint_all.sh` after implementation
+- Run `python3 .claude/lint_all.py` after implementation
 
 ## Parallel Execution
 

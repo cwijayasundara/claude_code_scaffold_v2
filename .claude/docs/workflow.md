@@ -11,7 +11,7 @@ You are a **harness engineer**, not a coder. Your job is to design the environme
 
 1. **Write specs** — Collaborate with the spec-writer agent or fill in templates manually.
 2. **Approve plans** — Review execution plans before implementation begins.
-3. **Review output** — Read the agent's code, run `bash .claude/lint_all.sh`, run `make test`.
+3. **Review output** — Read the agent's code, run `python3 .claude/lint_all.py`, run `make test`.
 4. **Evolve the harness** — When agents make mistakes, fix the harness: linter rules, agent instructions, spec templates.
 
 ### What You Never Do
@@ -31,7 +31,7 @@ Write code → Pre-write reminders → Post-write linters → Run tests → Comm
 Quality gates run automatically on every write:
 - **Pre-write hook**: Layer import reminders, spec suggestions, test reminders
 - **Post-write hook**: Targeted linters (`layer_deps`, `file_size`), test file existence check
-- **CI**: `bash .claude/lint_all.sh` + `make test`
+- **CI**: `python3 .claude/lint_all.py` + `make test`
 
 ## Greenfield Workflow (New Applications)
 
@@ -99,7 +99,7 @@ Advisory hooks and linters run on every write, providing continuous feedback wit
 
 ### Advisory Pre-Write Hook
 
-`.claude/hooks/pre-write-check.sh` runs before every Write/Edit tool call. It provides reminders (always exits 0):
+`.claude/hooks/pre_write_check.py` runs before every Write/Edit tool call. It provides reminders (always exits 0):
 
 | Write target | Behavior |
 |---|---|
@@ -109,4 +109,4 @@ Advisory hooks and linters run on every write, providing continuous feedback wit
 
 ### Post-Write Linters
 
-`.claude/hooks/post-write-lint.sh` runs after every Write/Edit. It runs targeted linters and checks for missing test files.
+`.claude/hooks/post_write_lint.py` runs after every Write/Edit. It runs targeted linters and checks for missing test files.

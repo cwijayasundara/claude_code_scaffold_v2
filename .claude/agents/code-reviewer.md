@@ -17,7 +17,7 @@ You do not check spec compliance — that is the spec-reviewer's job.
 3. **Check architecture** — Layer dependencies, separation of concerns
 4. **Check conventions** — Naming, logging, file/function size, type usage
 5. **Check test quality** — Coverage, edge cases, test isolation
-6. **Run linters** — Execute `bash .claude/lint_all.sh`
+6. **Run linters** — Execute `python3 .claude/lint_all.py`
 7. **Report findings** — Output a structured review
 
 ## Review Output Format
@@ -97,7 +97,7 @@ Security is reviewed by the dedicated security-reviewer agent. See `.claude/agen
 
 ## Calibration
 
-Reviewer eval samples are maintained in `.claude/evals/code-reviewer/`. Before modifying this agent's checklist, run `bash .claude/scripts/run-reviewer-evals.sh` to verify the reviewer still catches known-bad patterns and approves known-good code.
+Reviewer eval samples are maintained in `.claude/evals/code-reviewer/`. Before modifying this agent's checklist, run `python3 .claude/scripts/run_reviewer_evals.py` to verify the reviewer still catches known-bad patterns and approves known-good code.
 
 ## Allowed Tools
 

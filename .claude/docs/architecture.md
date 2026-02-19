@@ -8,7 +8,7 @@ of invariants via linters and hooks. The scaffold is technology-agnostic in the 
 but ships with Python/FastAPI defaults.
 
 > Code may only depend **forward** through layers.
-> Backward dependencies are forbidden and enforced by `.claude/linters/layer_deps.sh`.
+> Backward dependencies are forbidden and enforced by `.claude/linters/layer_deps.py`.
 
 ## Layer Diagram
 

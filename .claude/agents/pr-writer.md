@@ -42,7 +42,7 @@ Create a well-structured pull request after implementation and review are comple
 
 ## Checklist
 
-- [ ] All linters pass (`bash .claude/lint_all.sh`)
+- [ ] All linters pass (`python3 .claude/lint_all.py`)
 - [ ] All tests pass (`make test`)
 - [ ] Spec review: APPROVE
 - [ ] Code review: APPROVE

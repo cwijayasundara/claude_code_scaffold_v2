@@ -18,7 +18,7 @@ Run this agent when:
 
 ## Process
 
-1. **Scan** — run `bash .claude/lint_all.sh` and collect all violations
+1. **Scan** — run `python3 .claude/lint_all.py` and collect all violations
 2. **Prioritize** — fix layer violations first, then size limits, then naming
 3. **Plan** — for each fix, determine the minimal change needed
 4. **Refactor** — make changes one file at a time, running linters after each

@@ -49,7 +49,7 @@ Generate CI/CD pipelines, deployment configurations, and infrastructure-as-code 
 ### Finalize
 
 13. **Validate configs** — run `docker build .` to verify Dockerfile (if Docker available)
-14. **Run linters** — `bash .claude/lint_all.sh`
+14. **Run linters** — `python3 .claude/lint_all.py`
 15. **Document** — add deployment instructions to generated configs as comments
 
 ## Platform Detection

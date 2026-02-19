@@ -1,6 +1,6 @@
 # Custom Linters Reference
 
-Run all: `bash .claude/lint_all.sh`
+Run all: `python3 .claude/lint_all.py`
 
 All linters exit 0 on success, 1 on failure. Error messages include remediation instructions.
 

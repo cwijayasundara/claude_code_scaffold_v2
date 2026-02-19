@@ -26,7 +26,7 @@ format: ## Auto-fix lint issues
 	ruff format src/ tests/
 
 lint-custom: ## Run custom linters (layer_deps, file_size)
-	bash .claude/lint_all.sh
+	python3 .claude/lint_all.py
 
 # ---- Tests ----
 
@@ -60,7 +60,7 @@ ci: lint lint-custom test ## Full CI: lint + custom linters + typecheck + tests 
 # ---- Spec System ----
 
 validate: ## Validate scaffold integrity
-	bash .claude/scripts/validate-scaffold.sh
+	python3 .claude/scripts/validate_scaffold.py
 
 # ---- Deploy ----
 

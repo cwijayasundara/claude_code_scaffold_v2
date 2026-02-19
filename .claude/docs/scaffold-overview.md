@@ -1,11 +1,11 @@
-# Scaffold Overview (Agent Quick Reference)
+# Scaffold Overview (Consolidated Reference)
 
-> **Read this file to understand the scaffold. Do NOT broadly explore `.claude/` directories.**
-> Only read individual `.claude/docs/` files when working on a specific pipeline phase.
+> This file summarizes all scaffold docs for the main conversation.
+> Subagents should NOT read this or any `.claude/` files — the main conversation provides scaffold context in their prompts.
 
 ## Architecture
 
-Layer model with strict forward-only dependencies (enforced by `.claude/linters/layer_deps.sh`):
+Layer model with strict forward-only dependencies (enforced by `.claude/linters/layer_deps.py`):
 
 ```
 Types (src/types/) → Config (src/config/) → Repo (src/repo/) → Service (src/service/) → Runtime (src/runtime/) → UI (src/ui/)
@@ -91,7 +91,7 @@ Traceability: `specs/features/<name>.md` → `specs/stories/`, `specs/design/`, 
 
 ## Quality Gates
 
-- **Pre-write hook** (`.claude/hooks/pre-write-check.sh`): Layer import reminders, spec suggestions, test reminders
-- **Post-write hook** (`.claude/hooks/post-write-lint.sh`): Runs `layer_deps` + `file_size` linters, checks test file existence
-- **CI**: `bash .claude/lint_all.sh` + `make test` on every push
-- Run all linters manually: `bash .claude/lint_all.sh`
+- **Pre-write hook** (`.claude/hooks/pre_write_check.py`): Layer import reminders, spec suggestions, test reminders
+- **Post-write hook** (`.claude/hooks/post_write_lint.py`): Runs `layer_deps` + `file_size` linters, checks test file existence
+- **CI**: `python3 .claude/lint_all.py` + `make test` on every push
+- Run all linters manually: `python3 .claude/lint_all.py`

@@ -38,14 +38,15 @@ This scaffold gives your agents a production-grade harness:
 │  │  devops → spec-reviewer → code-reviewer → security-reviewer  │  │
 │  │  pr-writer → refactorer                                       │  │
 │  │  ┌─────────────────────────────────────────────────────────┐  │  │
-│  │  │                    Hooks (3)                             │  │  │
-│  │  │  PreToolUse:  pre-write-check (layer rules, reminders)  │  │  │
-│  │  │  PostToolUse: post-write-lint (layer_deps, file_size)   │  │  │
-│  │  │  Stop:        post-commit-spec-check                    │  │  │
+│  │  │                    Hooks (4)                             │  │  │
+│  │  │  PreToolUse:  pre_write_check (layer rules, reminders)  │  │  │
+│  │  │               pre_read_scaffold_guard (scaffold warn)   │  │  │
+│  │  │  PostToolUse: post_write_lint (layer_deps, file_size)   │  │  │
+│  │  │  Stop:        post_commit_spec_check                    │  │  │
 │  │  │  ┌───────────────────────────────────────────────────┐  │  │  │
 │  │  │  │              Custom Linters (2)                   │  │  │  │
-│  │  │  │  layer_deps.sh — forward-only layer imports      │  │  │  │
-│  │  │  │  file_size.sh  — max 300 lines/file, 50/func    │  │  │  │
+│  │  │  │  layer_deps.py — forward-only layer imports      │  │  │  │
+│  │  │  │  file_size.py  — max 300 lines/file, 50/func    │  │  │  │
 │  │  │  │  ┌─────────────────────────────────────────────┐ │  │  │  │
 │  │  │  │  │     Templates (8) + Reviewer Evals (6)     │ │  │  │  │
 │  │  │  │  │  app_spec | feature_spec | feature_lite    │ │  │  │  │
@@ -198,7 +199,7 @@ This scaffold gives your agents a production-grade harness:
   │
   ▼
  ┌──────────────┐    ┌──────────────────────────────────────────────┐
- │  PreToolUse  │───▶│  pre-write-check.sh (advisory — never blocks)│
+ │  PreToolUse  │───▶│  pre_write_check.py (advisory — never blocks) │
  │  Write|Edit  │    │                                              │
  │              │    │  src/<layer>/* ──▶ Layer import reminder      │
  │              │    │  src/service/* ──▶ Spec suggestion (new mod) │
@@ -210,16 +211,16 @@ This scaffold gives your agents a production-grade harness:
   │
   ▼
  ┌──────────────┐    ┌──────────────────────────────────────────────┐
- │ PostToolUse  │───▶│  post-write-lint.sh                         │
+ │ PostToolUse  │───▶│  post_write_lint.py                         │
  │  Write|Edit  │    │                                              │
- │              │    │  layer_deps.sh ──▶ Backward import? ── WARN │
- │              │    │  file_size.sh  ──▶ Over 300 lines?  ── WARN │
+ │              │    │  layer_deps.py ──▶ Backward import? ── WARN │
+ │              │    │  file_size.py  ──▶ Over 300 lines?  ── WARN │
  │              │    │  Missing test? ──▶ Test reminder     ── WARN │
  └──────────────┘    └──────────────────────────────────────────────┘
   │
   ▼
  ┌──────────────┐    ┌──────────────────────────────────────────────┐
- │    Stop      │───▶│  post-commit-spec-check.sh                  │
+ │    Stop      │───▶│  post_commit_spec_check.py                  │
  │   (on exit)  │    │                                              │
  │              │    │  Spec coverage check before session ends     │
  └──────────────┘    └──────────────────────────────────────────────┘
@@ -284,10 +285,10 @@ git clone https://github.com/your-org/sdsl-scaffold.git my-project
 cd my-project
 
 # 2. Validate scaffold integrity
-bash .claude/scripts/validate-scaffold.sh
+python3 .claude/scripts/validate_scaffold.py
 
 # 3. Validate reviewer eval samples
-bash .claude/scripts/run-reviewer-evals.sh
+python3 .claude/scripts/run_reviewer_evals.py
 
 # 4. Install dependencies
 make build
@@ -300,7 +301,7 @@ cp .claude/templates/feature_spec_lite.md specs/features/my-feature.md
 # Tell the agent: "Implement the feature spec at specs/features/my-feature.md"
 
 # 7. Verify
-bash .claude/lint_all.sh   # Custom linters
+python3 .claude/lint_all.py   # Custom linters
 make test                  # Unit + integration tests
 ```
 
@@ -345,7 +346,7 @@ Copy `.claude/agents/` and `.claude/templates/`. Create a `specs/features/` dire
 
 ### Tier 3: Full (1 hour)
 
-Add `.claude/linters/`, `.claude/hooks/`, `.claude/lint_all.sh`, and `.claude/settings.json`. Customize linter thresholds for your project.
+Add `.claude/linters/`, `.claude/hooks/`, `.claude/lint_all.py`, and `.claude/settings.json`. Customize linter thresholds for your project.
 
 See [.claude/docs/onboarding.md](.claude/docs/onboarding.md) for details.
 
@@ -381,7 +382,7 @@ The code-reviewer agent is calibrated against known-good and known-bad code samp
     bare_except.py       # Bare except: with no context
 ```
 
-Each sample includes metadata comments documenting the expected verdict, expected findings, and which conventions it tests. When modifying reviewer rules, run `bash .claude/scripts/run-reviewer-evals.sh` to verify the eval inventory, then invoke the code-reviewer against samples to check for regressions.
+Each sample includes metadata comments documenting the expected verdict, expected findings, and which conventions it tests. When modifying reviewer rules, run `python3 .claude/scripts/run_reviewer_evals.py` to verify the eval inventory, then invoke the code-reviewer against samples to check for regressions.
 
 To add a new eval: create a `.py` file in the appropriate directory with `Expected reviewer verdict:` and `Violations:` (or `Conventions demonstrated:`) comments.
 
@@ -390,7 +391,7 @@ To add a new eval: create a `.py` file in the appropriate directory with `Expect
 ## FAQ
 
 **Do I need the 6-layer model?**
-No. Describe your own architecture in `CLAUDE.md` and customize the `layer_deps.sh` linter.
+No. Describe your own architecture in `CLAUDE.md` and customize the `layer_deps.py` linter.
 
 **Can I use this with TypeScript / Go / other languages?**
 The framework is language-agnostic. You'd need to update `pyproject.toml`, the Makefile, and language-specific linters.

@@ -203,7 +203,7 @@ Describe where new UI elements appear and how they relate to existing layout:
 
 - [ ] All acceptance criteria have passing tests
 - [ ] Coverage for new code is >= 80%
-- [ ] All linters pass (`bash .claude/lint_all.sh`)
+- [ ] All linters pass (`python3 .claude/lint_all.py`)
 - [ ] API responses match the documented schemas exactly
 - [ ] UI matches the visual specs described above
 - [ ] No console errors or unhandled exceptions

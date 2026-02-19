@@ -110,6 +110,7 @@ Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `temp
 
 ## Key References
 
-> **Do NOT read README.md** — it duplicates this file. Read only the doc relevant to your current task.
+> **Exploration protocol**: To understand this scaffold, read `.claude/docs/scaffold-overview.md` — it consolidates all docs into one file.
+> Do NOT broadly explore `.claude/` or read README.md. Only read individual `.claude/docs/` files when working on a specific phase.
 
-[pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)
+Detailed docs (read on demand): [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)

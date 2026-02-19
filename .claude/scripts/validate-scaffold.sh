@@ -96,7 +96,7 @@ echo ""
 
 # ---- 8. Documentation ----
 echo "8. Documentation"
-for doc in architecture workflow conventions linters pipeline testing-standard; do
+for doc in architecture workflow conventions linters pipeline testing-standard scaffold-overview; do
   if [[ -f ".claude/docs/$doc.md" ]]; then pass ".claude/docs/$doc.md"; else fail ".claude/docs/$doc.md missing"; fi
 done
 echo ""

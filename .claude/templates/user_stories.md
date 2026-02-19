@@ -1,3 +1,4 @@
+<!-- AGENT: Do not read during exploration. This template is used only when creating specs. Read .claude/docs/scaffold-overview.md instead. -->
 # User Stories: [Feature Name]
 
 **Feature Spec**: `specs/features/[feature-name].md`

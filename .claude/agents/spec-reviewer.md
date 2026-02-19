@@ -1,3 +1,5 @@
+> **Token efficiency**: Do NOT read README.md. Only read the .claude/docs/ files referenced below.
+
 # Spec Reviewer Agent
 
 ## Role

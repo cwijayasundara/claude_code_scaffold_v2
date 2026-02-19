@@ -74,8 +74,7 @@ Details: [.claude/docs/conventions.md](.claude/docs/conventions.md) | [.claude/d
 
 ## Scaffolding Structure
 
-Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
-Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
+Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `templates/`, `scripts/`). Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
 ## Agents (10)
 
@@ -111,4 +110,6 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
 ## Key References
 
-Docs: [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)
+> **Do NOT read README.md** — it duplicates this file. Read only the doc relevant to your current task.
+
+[pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [testing-standard](.claude/docs/testing-standard.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)

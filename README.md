@@ -1,3 +1,5 @@
+<!-- AGENT NOTE: Do NOT read this file for project understanding. This README is for human visitors browsing GitHub. All information you need is in CLAUDE.md (always loaded) and .claude/docs/. Reading this file wastes tokens on duplicate content. -->
+
 # Claude Code Production Scaffold
 
 **A spec-driven scaffolding framework for Claude Code.**
@@ -319,88 +321,13 @@ make test                  # Unit + integration tests
 
 ## Workflow
 
-This scaffold supports two modes. Your prompt wording is the switch.
+Three modes — your prompt wording is the switch:
 
-### Greenfield / New Application (Full SDLC)
+- **Greenfield (Full SDLC)**: "Build me X" — runs `SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR`
+- **Feature (Feature SDLC)**: "Add feature X" — same pipeline, scoped to one feature
+- **Day-to-day**: "Fix bug in X" / "Refactor X" — direct changes, quality gates only
 
-Use this when bootstrapping a new application from scratch. The pipeline runs **automatically from spec to PR** -- you only pause at two approval checkpoints.
-
-```
-SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR
-```
-
-**Example prompts:**
-
-```
-"Use the spec-writer agent to create a spec for a task management app"
-"Use the spec-writer agent — I want to build a clone of Notion"
-"Build me an AI chat interface with conversation management and artifacts"
-```
-
-**What happens:**
-1. The **spec-writer** agent interviews you (vision, tech shape, scope/priority)
-2. It drafts a comprehensive app spec at `specs/app_spec.md` for your approval
-3. It produces stories, design doc, test plan, and execution plan
-4. **You approve the plan** (checkpoint 1)
-5. The **implementer** agent(s) build from the plan (teams for parallel stories)
-6. The **test-writer** fills coverage gaps, **e2e-writer** generates Playwright tests
-7. The **devops** agent generates CI/CD, Dockerfile, and deployment configs
-8. **spec-reviewer** + **code-reviewer** + **security-reviewer** validate (auto-loop on failures, calibrated against eval samples)
-9. **You approve for PR** (checkpoint 2)
-10. The **pr-writer** creates a structured PR with story-based commits
-
-### New Feature (Feature SDLC)
-
-Use this when adding a significant feature to an existing application. Same full pipeline, scoped to one feature.
-
-**Example prompts:**
-
-```
-"Use the spec-writer agent to create a spec for user authentication"
-"Use the spec-writer agent to brainstorm a spec for payment processing"
-```
-
-**What happens:**
-1. The **spec-writer** agent interviews you (intent, behavior, data/integration)
-2. It produces feature spec, stories, design, test plan, and execution plan
-3. **You approve the plan** (checkpoint 1)
-4. The **implementer** agent builds from the approved plan, story by story
-5. **e2e-writer** and **devops** agents generate tests and configs
-6. **spec-reviewer** + **code-reviewer** + **security-reviewer** validate the output
-7. **You approve for PR** (checkpoint 2)
-8. The **pr-writer** agent creates a structured PR
-
-### Day-to-Day (Quality Gates Only)
-
-Use this for bug fixes, refactoring, small improvements, and iterative changes. Just ask directly — no specs needed. Quality gates (advisory hooks + linters + CI) provide feedback automatically on every write.
-
-**Example prompts:**
-
-```
-"Fix the token refresh bug in src/service/auth.py"
-"Add input validation to the create_user endpoint"
-"Refactor the payment module to reduce duplication"
-"Add pagination to the list_orders endpoint"
-```
-
-**What happens:**
-1. Claude Code writes code directly
-2. Pre-write hook reminds about layer rules and tests
-3. Post-write hook runs linters (`layer_deps`, `file_size`)
-4. You run `make test` to verify
-
-### When to Use Which
-
-| Situation | Mode | Why |
-|---|---|---|
-| New application from scratch | Greenfield SDLC | App spec first — captures tech stack, schema, API, UI, phases |
-| Major new feature (auth, payments, etc.) | Feature SDLC | Feature spec — captures one feature's requirements fully |
-| Bug fix | Day-to-day | Direct fix, linters catch regressions |
-| Refactoring | Day-to-day | Structure changes, not new behavior |
-| Small improvement (add a field, tweak validation) | Day-to-day | Too small for a full spec |
-| Cross-cutting change (logging, error handling) | Either | Use spec if it touches 5+ files, otherwise day-to-day |
-
-See [.claude/docs/workflow.md](.claude/docs/workflow.md) for details.
+See [.claude/docs/workflow.md](.claude/docs/workflow.md) for detailed mode descriptions and examples.
 
 ---
 

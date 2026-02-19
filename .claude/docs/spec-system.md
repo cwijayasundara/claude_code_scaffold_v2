@@ -43,21 +43,7 @@ All specs converge at `specs/features/<name>.md` — from there, the workflow is
 
 ## Feature Spec Anatomy
 
-Every spec in `specs/features/` follows one of the templates:
-
-| Section | Purpose |
-|---------|---------|
-| Title & ID | Unique identification |
-| Description | What the feature does |
-| Acceptance Criteria | Testable Given/When/Then statements |
-| Affected Layers | Which layers need changes |
-| Business Rules | Precise, testable statements |
-| Edge Cases | Boundary conditions |
-| Error Handling | Error conditions and messages |
-| Implementation Order | Layer-by-layer build sequence |
-| Test Strategy | What to test and how |
-
-The full template adds: Motivation, Technology Context, Data Model, API Endpoints, UI Changes, User Interaction Flow, Dependencies, NFRs, and Estimated Complexity.
+See `.claude/templates/feature_spec.md` and `.claude/templates/feature_spec_lite.md` for the complete section layouts.
 
 ## Spec-to-Code Traceability
 

@@ -1,3 +1,5 @@
+> **Token efficiency**: Do NOT read README.md. Only read the .claude/docs/ files referenced below.
+
 # Implementer Agent
 
 ## Role
@@ -68,17 +70,9 @@ Use parallel execution when it saves time. For small features (2-3 stories), seq
 
 The main conversation handles team setup. Implementer agents participate as team members.
 
-### Main Conversation Responsibilities (team setup)
+### Team Setup
 
-The main conversation (not this agent) handles:
-1. Read `specs/stories/<name>.md` for parallel groups
-2. Decide: if 4+ stories AND 2+ parallel groups → team mode; otherwise → single implementer
-3. Create a feature branch: `git checkout -b feat/<feature-name>`
-4. Use `TeamCreate` to create the team
-5. Use `TaskCreate` to create one task per story, with `addBlockedBy` for dependencies
-6. Spawn implementer agents per parallel group using the `Task` tool
-7. Monitor progress via `TaskList`
-8. After all tasks complete, run the full test suite
+The main conversation handles team creation and task assignment per `.claude/docs/pipeline.md#team-orchestration-protocol`. This agent participates as a team member.
 
 ### Agent-as-Team-Member Behavior
 

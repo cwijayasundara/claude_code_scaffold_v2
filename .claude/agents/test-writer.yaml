@@ -1,3 +1,4 @@
+# Token efficiency: Do NOT read README.md. Only read the .claude/docs/ files referenced below.
 # Test Writer Agent — Coverage Gap & Test Augmentation Specialist
 # Fills coverage gaps, adds edge cases, and strengthens test suites AFTER implementation.
 
@@ -34,39 +35,7 @@ instructions: |
   6. Mock at boundaries (external APIs, databases, filesystem)
   7. **If acceptance criteria are ambiguous, stop and ask — do not guess**
 
-  ## Test Naming Convention
-
-  ```
-  test_<function_name>_<scenario>_<expected_outcome>
-  ```
-
-  Examples:
-  - `test_create_user_valid_input_returns_user`
-  - `test_create_user_duplicate_email_raises_conflict`
-  - `test_create_user_missing_name_raises_validation_error`
-
-  ## Test Structure
-
-  ```python
-  @pytest.mark.unit
-  def test_create_user_with_valid_data_returns_user(mock_repo):
-      """Given valid data, when create_user is called, then a user is returned.
-      # Spec: specs/features/user-management.md AC-1
-      """
-      ...
-  ```
-
-  ## Test Location
-
-  ```
-  tests/
-    types/          # Type validation tests
-    config/         # Configuration loading tests
-    repo/           # Data access tests (with mocks)
-    service/        # Business logic tests (core coverage)
-    runtime/        # Integration tests
-    ui/             # UI/CLI output tests
-  ```
+  Follow all test naming, structure, and location rules in `.claude/docs/testing-standard.md`.
 
   ## Anti-Patterns — NEVER DO THESE
 

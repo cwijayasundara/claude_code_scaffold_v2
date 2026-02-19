@@ -74,35 +74,11 @@ Phase-by-phase details: [pipeline.md](pipeline.md)
 
 ## Post-Spec Pipeline (Automatic Continuation)
 
-After the spec-writer completes phases 1-5, the main conversation **automatically continues** through the remaining phases. The human does not need to manually trigger each phase.
+After the spec-writer completes phases 1-5, the pipeline continues automatically through implementation, testing, review, and PR. See [pipeline.md](pipeline.md) for the phase-by-phase runbook.
 
-### What Happens After Spec-Writer Completes
+The pipeline pauses at two human approval checkpoints: before implementation (phase 5) and before PR (phase 10).
 
-The pipeline orchestrator ([pipeline.md](pipeline.md)) drives the following phases:
-
-| Phase | Agent | Human Role |
-|-------|-------|------------|
-| 6. Implement | implementer (or team) | Wait — agents work autonomously |
-| 7. Test Fill | test-writer | Wait — auto-triggered if coverage < 80% |
-| 8. E2E Tests | e2e-writer | Wait — generates from test plan |
-| 9. DevOps | devops | Wait — generates CI/CD and infra configs |
-| 10. Review | spec-reviewer + code-reviewer + security-reviewer | Review verdicts presented for awareness |
-| 11. PR | pr-writer | Merge the PR |
-
-### Human Approval Checkpoints
-
-The pipeline pauses at exactly **two points** for human approval:
-1. **Before implementation** (after phase 5) — review the execution plan
-2. **Before PR** (after phase 10) — review the review verdicts and changes summary
-
-### Resuming Across Conversation Turns
-
-If a conversation ends mid-pipeline:
-1. Start a new conversation
-2. Say "Continue the pipeline" or "What's next?"
-3. The main conversation reads `specs/pipeline_status.md` and resumes from the next incomplete phase
-
-The pipeline status file is updated after every phase, so no progress is lost.
+To resume across conversations: say "Continue the pipeline" — it reads `specs/pipeline_status.md`.
 
 ## Feedback Loops — Evolving the Harness
 

@@ -25,9 +25,15 @@ What this application does in 2-3 sentences. What problem it solves and who it's
 - [Service name] — [purpose]
 
 ### Infrastructure
-- **Hosting**: [e.g., AWS, Azure, Vercel]
-- **CI/CD**: [e.g., GitHub Actions]
-- **Containerization**: [e.g., Docker]
+- **Hosting**: [e.g., Azure App Service (default), AWS ECS, Vercel, GCP Cloud Run]
+- **CI/CD**: [e.g., GitHub Actions (default)]
+- **Containerization**: [e.g., Docker (default)]
+- **Database hosting**: [e.g., Azure Database for PostgreSQL, AWS RDS, local SQLite]
+- **Secrets management**: [e.g., Azure Key Vault, AWS Secrets Manager, .env files]
+- **Deployment strategy**:
+  - Environments: [e.g., staging + production]
+  - Triggers: [e.g., push to main → staging, manual approval → production]
+  - Zero-downtime: [e.g., rolling deployment, blue-green, slot swap]
 
 ## Core Features
 

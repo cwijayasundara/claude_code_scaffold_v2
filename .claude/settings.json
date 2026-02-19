@@ -20,7 +20,9 @@
       "Bash(mkdir *)",
       "Bash(ls *)",
       "Bash(ls)",
-      "Bash(bash .claude/*)"
+      "Bash(bash .claude/*)",
+      "Bash(playwright *)",
+      "Bash(npx playwright *)"
     ]
   },
   "hooks": {

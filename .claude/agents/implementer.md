@@ -62,6 +62,41 @@ When 2+ stories have no dependency relationship (identified in the parallel grou
 
 Use parallel execution when it saves time. For small features (2-3 stories), sequential is usually faster.
 
+## Team Orchestration
+
+The main conversation handles team setup. Implementer agents participate as team members.
+
+### Main Conversation Responsibilities (team setup)
+
+The main conversation (not this agent) handles:
+1. Read `specs/stories/<name>.md` for parallel groups
+2. Decide: if 4+ stories AND 2+ parallel groups → team mode; otherwise → single implementer
+3. Create a feature branch: `git checkout -b feat/<feature-name>`
+4. Use `TeamCreate` to create the team
+5. Use `TaskCreate` to create one task per story, with `addBlockedBy` for dependencies
+6. Spawn implementer agents per parallel group using the `Task` tool
+7. Monitor progress via `TaskList`
+8. After all tasks complete, run the full test suite
+
+### Agent-as-Team-Member Behavior
+
+When spawned as a team member:
+1. Read the team task list using `TaskList`
+2. Claim an unblocked, unassigned task using `TaskUpdate` (set owner to your name)
+3. Read the task details with `TaskGet` — it contains the story to implement
+4. Follow the standard implementer process (read spec, implement, test, commit)
+5. Commit with message: `feat(US-XXX): <story description>`
+6. Mark the task complete with `TaskUpdate`
+7. Check `TaskList` for newly unblocked tasks — claim and implement the next one
+8. When no more tasks are available, report completion to the team lead
+
+### Sequential Fallback
+
+Use a single implementer agent (no team) when:
+- Fewer than 4 stories
+- Only 1 parallel group (all stories are interdependent)
+- Team setup fails or is impractical
+
 ## Allowed Tools
 
 - **Read**, **Write**, **Edit**, **Bash**, **Glob**, **Grep**

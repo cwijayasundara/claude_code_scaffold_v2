@@ -39,18 +39,28 @@ Run all linters manually: `bash .claude/lint_all.sh`
 
 | Request pattern | REQUIRED action |
 |---|---|
-| "Build me ..." / "Create a ..." / "I want an app that ..." | **MUST** invoke the **spec-writer** agent first. It interviews the user, produces an app spec, decomposes into feature specs. **Do NOT explore the codebase, research libraries, or write a plan. Start the spec-writer interview immediately.** |
-| "Add feature X" / "Build X feature" / "Add X to the app" | **MUST** invoke the **spec-writer** agent first. It interviews the user and produces a feature spec. |
-| "Here's a spec for X" / user provides a spec | Verify the spec, create stories + plan, wait for human approval before implementing. |
+| "Build me ..." / "Create a ..." / "I want an app that ..." | **MUST follow the Full Pipeline.** Start with the spec-writer agent interview, then continue through ALL phases per [pipeline.md](.claude/docs/pipeline.md). Do NOT stop after specs. |
+| "Add feature X" / "Build X feature" / "Add X to the app" | **MUST follow the Full Pipeline.** Start with the spec-writer agent interview for a feature spec, then continue through ALL phases per [pipeline.md](.claude/docs/pipeline.md). |
+| "Continue the pipeline" / "What's next?" / "Resume" | Read `specs/pipeline_status.md` and resume from the next incomplete phase. |
+| "Here's a spec for X" / user provides a spec | Verify the spec, create stories + plan, wait for human approval before implementing. Then continue through remaining pipeline phases. |
 | "Fix bug in X" / "Refactor X" / "Add validation to X" | Fix directly — quality gates provide feedback automatically. |
 
 **Violation**: If you start writing code, exploring the codebase, or making a plan for a "Build me" / "Add feature" request without first running the spec-writer interview, you are violating this workflow.
 
+## Full Pipeline
+
 ```
-SPEC → STORIES → DESIGN → TEST PLAN → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR
 ```
 
-Details: [.claude/docs/workflow.md](.claude/docs/workflow.md)
+**Key rules**:
+1. **Verify artifacts** before advancing — check files exist at expected paths
+2. **Update `specs/pipeline_status.md`** after each phase (copy template from `.claude/templates/pipeline_status.md` if it doesn't exist)
+3. **Wait for human approval** at two checkpoints: before implementation and before PR
+4. **Loop on review failures** — if spec-review or code-review fails, re-invoke implementer, then re-review (max 3 cycles)
+5. **Use teams for parallel stories** — when 4+ stories with 2+ parallel groups, create a team with implementer agents per group
+
+Details: [.claude/docs/pipeline.md](.claude/docs/pipeline.md) | [.claude/docs/workflow.md](.claude/docs/workflow.md)
 
 ## Conventions
 
@@ -67,7 +77,7 @@ Details: [.claude/docs/conventions.md](.claude/docs/conventions.md)
 Framework: `.claude/` (`agents/`, `docs/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
 Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
-## Agents (7)
+## Agents (9)
 
 | Agent | Role |
 |-------|------|
@@ -77,6 +87,8 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 | `spec-reviewer` | Validates implementation against spec |
 | `code-reviewer` | Validates code quality, conventions, security, and performance |
 | `test-writer` | Coverage gap filling after implementation |
+| `e2e-writer` | Playwright E2E tests and API contract tests from test plan |
+| `devops` | CI/CD pipelines, deployment configs, infrastructure-as-code |
 | `pr-writer` | Creates structured PRs with story-based commits |
 
 **Two-stage review**: spec-reviewer (spec compliance) + code-reviewer (code quality) — both must pass.
@@ -84,15 +96,18 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 ## Agent Instructions
 
 1. **NEVER skip the routing table above** — if the user says "Build me X" or "Add feature X", you MUST invoke the spec-writer agent BEFORE doing anything else. No exploring, no researching, no planning — start the interview.
-2. **Read the relevant spec** in `specs/` before implementing (if one exists)
-3. **Read files** before modifying them
-4. **If the spec is ambiguous, stop and ask** — do not guess
-5. **Run linters** after writing code: `bash .claude/lint_all.sh`
-6. **Run tests** after implementation: `make test`
-7. When a linter fails, read the error — it contains the fix
-8. Keep changes small and focused
-9. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
+2. **After spec-writer completes, continue the pipeline** — do NOT stop after producing specs. Follow [pipeline.md](.claude/docs/pipeline.md) through all remaining phases automatically.
+3. **Track progress** — update `specs/pipeline_status.md` after each phase completes
+4. **Use teams for parallel implementation** — when 4+ stories with 2+ parallel groups, use TeamCreate and spawn implementer agents
+5. **Read the relevant spec** in `specs/` before implementing (if one exists)
+6. **Read files** before modifying them
+7. **If the spec is ambiguous, stop and ask** — do not guess
+8. **Run linters** after writing code: `bash .claude/lint_all.sh`
+9. **Run tests** after implementation: `make test`
+10. When a linter fails, read the error — it contains the fix
+11. Keep changes small and focused
+12. Never fix code directly — fix the harness (linters, agents, docs) to prevent recurrence
 
 ## Key References
 
-Docs: [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)
+Docs: [pipeline](.claude/docs/pipeline.md) | [workflow](.claude/docs/workflow.md) | [architecture](.claude/docs/architecture.md) | [conventions](.claude/docs/conventions.md) | [linters](.claude/docs/linters.md) | [spec-system](.claude/docs/spec-system.md) | [git-workflow](.claude/docs/git-workflow.md) | [onboarding](.claude/docs/onboarding.md)

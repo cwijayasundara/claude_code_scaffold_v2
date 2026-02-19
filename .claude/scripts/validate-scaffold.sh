@@ -59,12 +59,12 @@ HOOK_COUNT=$(ls .claude/hooks/*.sh 2>/dev/null | wc -l | tr -d ' ')
 echo "  INFO: $HOOK_COUNT hook scripts found"
 echo ""
 
-# ---- 5. Agents (7 expected) ----
+# ---- 5. Agents (9 expected) ----
 echo "5. Agents"
 for agent in test-writer; do
   if [[ -f ".claude/agents/$agent.yaml" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
-for agent in spec-writer implementer refactorer code-reviewer spec-reviewer pr-writer; do
+for agent in spec-writer implementer refactorer code-reviewer spec-reviewer pr-writer e2e-writer devops; do
   if [[ -f ".claude/agents/$agent.md" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
 AGENT_COUNT=$(ls .claude/agents/ 2>/dev/null | wc -l | tr -d ' ')
@@ -89,14 +89,14 @@ echo ""
 
 # ---- 7. Spec system ----
 echo "7. Spec system"
-for tmpl in .claude/templates/app_spec.md .claude/templates/feature_spec.md .claude/templates/feature_spec_lite.md .claude/templates/design_doc.md .claude/templates/execution_plan.md; do
+for tmpl in .claude/templates/app_spec.md .claude/templates/feature_spec.md .claude/templates/feature_spec_lite.md .claude/templates/design_doc.md .claude/templates/execution_plan.md .claude/templates/pipeline_status.md; do
   if [[ -f "$tmpl" ]]; then pass "$tmpl"; else fail "$tmpl missing"; fi
 done
 echo ""
 
 # ---- 8. Documentation ----
 echo "8. Documentation"
-for doc in architecture workflow conventions linters; do
+for doc in architecture workflow conventions linters pipeline; do
   if [[ -f ".claude/docs/$doc.md" ]]; then pass ".claude/docs/$doc.md"; else fail ".claude/docs/$doc.md missing"; fi
 done
 echo ""

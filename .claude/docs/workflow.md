@@ -122,6 +122,38 @@ Both must pass before proceeding to PR.
 ### 9. PR (Agent — pr-writer)
 After both reviews pass, the pr-writer creates a structured pull request with story-based commits.
 
+## Post-Spec Pipeline (Automatic Continuation)
+
+After the spec-writer completes phases 1-5, the main conversation **automatically continues** through the remaining phases. The human does not need to manually trigger each phase.
+
+### What Happens After Spec-Writer Completes
+
+The pipeline orchestrator ([pipeline.md](pipeline.md)) drives the following phases:
+
+| Phase | Agent | Human Role |
+|-------|-------|------------|
+| 6. Implement | implementer (or team) | Wait — agents work autonomously |
+| 7. Test Fill | test-writer | Wait — auto-triggered if coverage < 80% |
+| 8. E2E Tests | e2e-writer | Wait — generates from test plan |
+| 9. DevOps | devops | Wait — generates CI/CD and infra configs |
+| 10. Review | spec-reviewer + code-reviewer | Review verdicts presented for awareness |
+| 11. PR | pr-writer | Merge the PR |
+
+### Human Approval Checkpoints
+
+The pipeline pauses at exactly **two points** for human approval:
+1. **Before implementation** (after phase 5) — review the execution plan
+2. **Before PR** (after phase 10) — review the review verdicts and changes summary
+
+### Resuming Across Conversation Turns
+
+If a conversation ends mid-pipeline:
+1. Start a new conversation
+2. Say "Continue the pipeline" or "What's next?"
+3. The main conversation reads `specs/pipeline_status.md` and resumes from the next incomplete phase
+
+The pipeline status file is updated after every phase, so no progress is lost.
+
 ## Feedback Loops — Evolving the Harness
 
 **When something fails, don't "try harder" — ask what capability is missing and make it enforceable.**

@@ -20,7 +20,240 @@ This scaffold gives your agents a production-grade harness:
 - **Linters enforce how to build** — conventions are checked mechanically
 - **Hooks catch mistakes in real-time** — before code is committed
 - **Templates standardize artifacts** — specs, plans, stories follow consistent formats
-- **Agents specialize** — 7 purpose-built agents handle different phases of the lifecycle
+- **Agents specialize** — 9 purpose-built agents handle different phases of the lifecycle
+
+---
+
+## Framework Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                            CLAUDE.md                                │
+│         (Routing, Architecture, Conventions, Pipeline Rules)        │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │                       Agents (9)                              │  │
+│  │  spec-writer → implementer → test-writer → e2e-writer        │  │
+│  │  devops → spec-reviewer → code-reviewer → pr-writer          │  │
+│  │  refactorer                                                   │  │
+│  │  ┌─────────────────────────────────────────────────────────┐  │  │
+│  │  │                    Hooks (3)                             │  │  │
+│  │  │  PreToolUse:  pre-write-check (layer rules, reminders)  │  │  │
+│  │  │  PostToolUse: post-write-lint (layer_deps, file_size)   │  │  │
+│  │  │  Stop:        post-commit-spec-check                    │  │  │
+│  │  │  ┌───────────────────────────────────────────────────┐  │  │  │
+│  │  │  │              Custom Linters (2)                   │  │  │  │
+│  │  │  │  layer_deps.sh — forward-only layer imports      │  │  │  │
+│  │  │  │  file_size.sh  — max 300 lines/file, 50/func    │  │  │  │
+│  │  │  │  ┌─────────────────────────────────────────────┐ │  │  │  │
+│  │  │  │  │          Templates (8)                      │ │  │  │  │
+│  │  │  │  │  app_spec | feature_spec | feature_lite    │ │  │  │  │
+│  │  │  │  │  design_doc | execution_plan | stories     │ │  │  │  │
+│  │  │  │  │  test_plan | pipeline_status               │ │  │  │  │
+│  │  │  │  └─────────────────────────────────────────────┘ │  │  │  │
+│  │  │  └───────────────────────────────────────────────────┘  │  │  │
+│  │  └─────────────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## 6-Layer Architecture
+
+```
+┌───────────────────────────────────────────────────────────────────┐
+│                        src/ (Application Code)                    │
+│                                                                   │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐   │
+│  │  Types   │───▶│  Config  │───▶│   Repo   │───▶│ Service  │   │
+│  │          │    │          │    │          │    │          │   │
+│  │ schemas  │    │ env vars │    │ data     │    │ business │   │
+│  │ enums    │    │ defaults │    │ access   │    │ logic    │   │
+│  │ models   │    │          │    │ API      │    │ rules    │   │
+│  └──────────┘    └──────────┘    │ clients  │    └────┬─────┘   │
+│                                  └──────────┘         │         │
+│                                                       ▼         │
+│                                  ┌──────────┐    ┌──────────┐   │
+│                                  │    UI    │◀───│ Runtime  │   │
+│                                  │          │    │          │   │
+│                                  │ present- │    │ server   │   │
+│                                  │ ation    │    │ boot     │   │
+│                                  │ CLI      │    │ middle-  │   │
+│                                  └──────────┘    │ ware     │   │
+│                                                  └──────────┘   │
+│                                                                   │
+│     ───▶  = allowed import direction (forward only)              │
+│     ◀╌╌╌  = FORBIDDEN (enforced by layer_deps linter)           │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+## Full SDLC Pipeline
+
+```
+  Phase 1        Phase 2        Phase 3        Phase 4        Phase 5
+ ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+ │   SPEC   │─▶│ STORIES  │─▶│  DESIGN  │─▶│TEST PLAN │─▶│EXEC PLAN │
+ │          │  │          │  │          │  │          │  │          │
+ │spec-     │  │spec-     │  │spec-     │  │spec-     │  │spec-     │
+ │writer    │  │writer    │  │writer    │  │writer    │  │writer    │
+ │          │  │          │  │          │  │          │  │          │
+ │specs/    │  │specs/    │  │specs/    │  │specs/    │  │specs/    │
+ │app_spec  │  │stories/  │  │design/   │  │tests/    │  │plans/    │
+ └──────────┘  └──────────┘  └──────────┘  └──────────┘  └─────┬────┘
+                                                                │
+                           ┌────────────────────────────────────┘
+                           ▼
+                  ┌─────────────────┐
+                  │  APPROVE PLAN   │  ◀── Human reviews execution plan
+                  │  (checkpoint 1) │      Must say "approved" to proceed
+                  └────────┬────────┘
+                           │
+  Phase 6        Phase 7   ▼    Phase 8        Phase 9
+ ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+ │IMPLEMENT │─▶│TEST FILL │─▶│ E2E TESTS│─▶│  DEVOPS  │
+ │          │  │          │  │          │  │          │
+ │implement-│  │test-     │  │e2e-      │  │devops    │
+ │er (team) │  │writer    │  │writer    │  │          │
+ │          │  │          │  │          │  │          │
+ │src/      │  │tests/    │  │tests/e2e/│  │infra/    │
+ │tests/    │  │(gaps)    │  │Playwright│  │Dockerfile│
+ └──────────┘  └──────────┘  └──────────┘  └─────┬────┘
+                                                   │
+                           ┌───────────────────────┘
+                           ▼
+  Phase 10
+ ┌──────────────────────────┐
+ │         REVIEW           │  spec-reviewer: does code match spec?
+ │                          │  code-reviewer: quality, security, perf?
+ │  ┌─────────┐ ┌────────┐ │
+ │  │  SPEC   │ │  CODE  │ │  If FAIL ──▶ re-invoke implementer
+ │  │ REVIEW  │ │ REVIEW │ │              then re-review (max 3x)
+ │  └─────────┘ └────────┘ │
+ └─────────────┬────────────┘
+               │
+               ▼
+      ┌─────────────────┐
+      │   APPROVE PR    │  ◀── Human reviews verdicts + changes
+      │  (checkpoint 2) │      Must approve to proceed
+      └────────┬────────┘
+               │
+               ▼
+  Phase 11
+ ┌──────────────────────┐
+ │          PR           │
+ │                       │
+ │  pr-writer creates    │
+ │  structured PR with   │
+ │  story-based commits  │
+ └──────────────────────┘
+```
+
+## Parallel Implementation (Agent Teams)
+
+```
+ specs/stories/<feature>.md
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Dependency Graph              Parallel Groups                │
+ │                                                               │
+ │  US-001 ──▶ US-004            Group A: [US-001, US-002, US-003] │
+ │  US-002 ──▶ US-005    ───▶   Group B: [US-004, US-005]       │
+ │  US-003 ──┘                   Group C: [US-006]               │
+ │  US-005 ──▶ US-006                                            │
+ └────────────────────────────────────────────────────────────────┘
+
+ Team mode triggers when: 4+ stories AND 2+ parallel groups
+
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Main Conversation (orchestrator — coordinates, does NOT code)│
+ │                                                               │
+ │  1. git checkout -b feat/<feature-name>                       │
+ │  2. TeamCreate: feat-<feature-name>                           │
+ │  3. TaskCreate: one task per story (with dependency blockers) │
+ │  4. Spawn implementer agents per parallel group               │
+ │                                                               │
+ │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐  │
+ │  │  Implementer 1  │  │  Implementer 2  │  │Implementer 3 │  │
+ │  │                 │  │                 │  │              │  │
+ │  │  US-001         │  │  US-002         │  │  US-003      │  │
+ │  │  TDD cycle      │  │  TDD cycle      │  │  TDD cycle   │  │
+ │  │  commit per     │  │  commit per     │  │  commit per  │  │
+ │  │  story          │  │  story          │  │  story       │  │
+ │  └────────┬────────┘  └────────┬────────┘  └──────┬───────┘  │
+ │           │                    │                   │          │
+ │           ▼                    ▼                   ▼          │
+ │  ┌────────────────────────────────────────────────────────┐   │
+ │  │       Group A complete → unblocks Group B tasks        │   │
+ │  └────────────────────────────────────────────────────────┘   │
+ │                                                               │
+ │  5. Monitor via TaskList                                      │
+ │  6. All tasks done → pytest tests/ --cov=src --cov-fail-under=80 │
+ └────────────────────────────────────────────────────────────────┘
+```
+
+## Quality Gates (Hook Enforcement)
+
+```
+  Claude Code Tool Call (Write / Edit)
+  │
+  ▼
+ ┌──────────────┐    ┌──────────────────────────────────────────────┐
+ │  PreToolUse  │───▶│  pre-write-check.sh (advisory — never blocks)│
+ │  Write|Edit  │    │                                              │
+ │              │    │  src/<layer>/* ──▶ Layer import reminder      │
+ │              │    │  src/service/* ──▶ Spec suggestion (new mod) │
+ │              │    │  src/* | tests/* ──▶ Test file reminder      │
+ └──────────────┘    └──────────────────────────────────────────────┘
+  │
+  ▼
+ [Tool executes — file is written]
+  │
+  ▼
+ ┌──────────────┐    ┌──────────────────────────────────────────────┐
+ │ PostToolUse  │───▶│  post-write-lint.sh                         │
+ │  Write|Edit  │    │                                              │
+ │              │    │  layer_deps.sh ──▶ Backward import? ── WARN │
+ │              │    │  file_size.sh  ──▶ Over 300 lines?  ── WARN │
+ │              │    │  Missing test? ──▶ Test reminder     ── WARN │
+ └──────────────┘    └──────────────────────────────────────────────┘
+  │
+  ▼
+ ┌──────────────┐    ┌──────────────────────────────────────────────┐
+ │    Stop      │───▶│  post-commit-spec-check.sh                  │
+ │   (on exit)  │    │                                              │
+ │              │    │  Spec coverage check before session ends     │
+ └──────────────┘    └──────────────────────────────────────────────┘
+  │
+  ▼
+ ┌──────────────┐    ┌──────────────────────────────────────────────┐
+ │     CI       │───▶│  .github/workflows/ci.yml                   │
+ │  (on push)   │    │                                              │
+ │              │    │  lint ──▶ ruff + mypy + custom linters       │
+ │              │    │  test ──▶ unit + integration (coverage 80%)  │
+ │              │    │  e2e  ──▶ Playwright browser + API tests     │
+ └──────────────┘    └──────────────────────────────────────────────┘
+```
+
+## Pipeline Status Tracking
+
+```
+ ┌──────────────────────────────────────────────────────────────────┐
+ │                   specs/pipeline_status.md                       │
+ │                                                                  │
+ │  Tracks current phase, artifacts, and blocking issues            │
+ │  Updated after every phase completion                            │
+ │                                                                  │
+ │  Conversation 1               Conversation 2                    │
+ │  ┌──────────────────┐         ┌──────────────────┐              │
+ │  │ Phase 1: Spec  ✓ │         │ Read pipeline     │              │
+ │  │ Phase 2: Story ✓ │         │ status.md         │              │
+ │  │ Phase 3: Design✓ │  ───▶   │                   │              │
+ │  │ Phase 4: Test  ✓ │  save   │ Last completed: 6 │              │
+ │  │ Phase 5: Plan  ✓ │  state  │ Resume from: 7    │              │
+ │  │ Phase 6: Impl  ✓ │         │ (Test Fill)       │              │
+ │  │ Phase 7: ...     │         │                   │              │
+ │  └──────────────────┘         └──────────────────┘              │
+ │                                                                  │
+ │  "Continue the pipeline" or "What's next?" triggers resumption  │
+ └──────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -28,14 +261,14 @@ This scaffold gives your agents a production-grade harness:
 
 | Category | Count | Purpose |
 |---|---|---|
-| **Agents** | 7 | Specialized sub-agents for every workflow phase |
+| **Agents** | 9 | Specialized sub-agents for every workflow phase |
 | **Custom linters** | 2 | Architecture (layer_deps) and file size enforcement |
 | **Hooks** | 3 | Real-time advisory checks on every file write |
-| **Templates** | 7 | App spec, feature specs (full + lite), plans, stories, test plans, design docs |
-| **Framework docs** | 7 | Workflow, architecture, conventions, linters, spec-system, git-workflow, onboarding |
-| **CI/CD** | 2 | GitHub Actions for linting and testing on every push |
+| **Templates** | 8 | App spec, feature specs (full + lite), plans, stories, test plans, design docs, pipeline status |
+| **Framework docs** | 8 | Pipeline, workflow, architecture, conventions, linters, spec-system, git-workflow, onboarding |
+| **CI/CD** | 2 | GitHub Actions for linting, testing, and E2E on every push |
 
-**Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy. Coverage enforced at 80% minimum.
+**Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy, Playwright. Coverage enforced at 80% minimum.
 
 ---
 
@@ -83,10 +316,10 @@ This scaffold supports two modes. Your prompt wording is the switch.
 
 ### Greenfield / New Application (Full SDLC)
 
-Use this when bootstrapping a new application from scratch. The spec-writer agent interviews you, produces a comprehensive **app spec** (tech stack, features, database schema, API, UI layout, design system, implementation phases), then decomposes it into individual feature specs.
+Use this when bootstrapping a new application from scratch. The pipeline runs **automatically from spec to PR** -- you only pause at two approval checkpoints.
 
 ```
-APP SPEC → FEATURE SPECS → STORIES → PLAN → APPROVE → IMPLEMENT → TEST → REVIEW → PR
+SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR
 ```
 
 **Example prompts:**
@@ -100,13 +333,18 @@ APP SPEC → FEATURE SPECS → STORIES → PLAN → APPROVE → IMPLEMENT → TE
 **What happens:**
 1. The **spec-writer** agent interviews you (vision, tech shape, scope/priority)
 2. It drafts a comprehensive app spec at `specs/app_spec.md` for your approval
-3. It decomposes the app spec into individual feature specs at `specs/features/*.md`
-4. You choose which feature to implement first
-5. For each feature: stories, plan, implement, test, review, PR
+3. It produces stories, design doc, test plan, and execution plan
+4. **You approve the plan** (checkpoint 1)
+5. The **implementer** agent(s) build from the plan (teams for parallel stories)
+6. The **test-writer** fills coverage gaps, **e2e-writer** generates Playwright tests
+7. The **devops** agent generates CI/CD, Dockerfile, and deployment configs
+8. **spec-reviewer** + **code-reviewer** validate (auto-loop on failures)
+9. **You approve for PR** (checkpoint 2)
+10. The **pr-writer** creates a structured PR with story-based commits
 
 ### New Feature (Feature SDLC)
 
-Use this when adding a significant feature to an existing application.
+Use this when adding a significant feature to an existing application. Same full pipeline, scoped to one feature.
 
 **Example prompts:**
 
@@ -117,12 +355,13 @@ Use this when adding a significant feature to an existing application.
 
 **What happens:**
 1. The **spec-writer** agent interviews you (intent, behavior, data/integration)
-2. It drafts a feature spec at `specs/features/<name>.md` for your approval
-3. It decomposes the spec into user stories and an execution plan
-4. You approve the plan
-5. The **implementer** agent builds from the approved plan, story by story
-6. The **code-reviewer** and **spec-reviewer** agents validate the output
-7. The **pr-writer** agent creates a structured PR
+2. It produces feature spec, stories, design, test plan, and execution plan
+3. **You approve the plan** (checkpoint 1)
+4. The **implementer** agent builds from the approved plan, story by story
+5. **e2e-writer** and **devops** agents generate tests and configs
+6. **spec-reviewer** + **code-reviewer** validate the output
+7. **You approve for PR** (checkpoint 2)
+8. The **pr-writer** agent creates a structured PR
 
 ### Day-to-Day (Quality Gates Only)
 
@@ -200,7 +439,7 @@ No. Describe your own architecture in `CLAUDE.md` and customize the `layer_deps.
 **Can I use this with TypeScript / Go / other languages?**
 The framework is language-agnostic. You'd need to update `pyproject.toml`, the Makefile, and language-specific linters.
 
-**What if I don't want all 7 agents?**
+**What if I don't want all 9 agents?**
 Start with spec-writer, implementer, and code-reviewer. Add others as your workflow matures.
 
 **How is this different from just using CLAUDE.md?**

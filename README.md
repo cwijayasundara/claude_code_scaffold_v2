@@ -20,7 +20,7 @@ This scaffold gives your agents a production-grade harness:
 - **Linters enforce how to build** — conventions are checked mechanically
 - **Hooks catch mistakes in real-time** — before code is committed
 - **Templates standardize artifacts** — specs, plans, stories follow consistent formats
-- **Agents specialize** — 9 purpose-built agents handle different phases of the lifecycle
+- **Agents specialize** — 10 purpose-built agents handle different phases of the lifecycle
 
 ---
 
@@ -31,10 +31,10 @@ This scaffold gives your agents a production-grade harness:
 │                            CLAUDE.md                                │
 │         (Routing, Architecture, Conventions, Pipeline Rules)        │
 │  ┌───────────────────────────────────────────────────────────────┐  │
-│  │                       Agents (9)                              │  │
+│  │                       Agents (10)                             │  │
 │  │  spec-writer → implementer → test-writer → e2e-writer        │  │
-│  │  devops → spec-reviewer → code-reviewer → pr-writer          │  │
-│  │  refactorer                                                   │  │
+│  │  devops → spec-reviewer → code-reviewer → security-reviewer  │  │
+│  │  pr-writer → refactorer                                       │  │
 │  │  ┌─────────────────────────────────────────────────────────┐  │  │
 │  │  │                    Hooks (3)                             │  │  │
 │  │  │  PreToolUse:  pre-write-check (layer rules, reminders)  │  │  │
@@ -123,11 +123,11 @@ This scaffold gives your agents a production-grade harness:
   Phase 10
  ┌──────────────────────────┐
  │         REVIEW           │  spec-reviewer: does code match spec?
- │                          │  code-reviewer: quality, security, perf?
- │  ┌─────────┐ ┌────────┐ │
- │  │  SPEC   │ │  CODE  │ │  If FAIL ──▶ re-invoke implementer
- │  │ REVIEW  │ │ REVIEW │ │              then re-review (max 3x)
- │  └─────────┘ └────────┘ │
+ │                          │  code-reviewer: quality + performance?
+ │  ┌──────┐┌──────┐┌────┐ │  security-reviewer: OWASP + auth + secrets?
+ │  │ SPEC ││ CODE ││SEC │ │
+ │  │REVIEW││REVIEW││REV │ │  If FAIL ──▶ re-invoke implementer
+ │  └──────┘└──────┘└────┘ │              then re-review (max 3x)
  └─────────────┬────────────┘
                │
                ▼
@@ -262,7 +262,7 @@ This scaffold gives your agents a production-grade harness:
 
 | Category | Count | Purpose |
 |---|---|---|
-| **Agents** | 9 | Specialized sub-agents for every workflow phase |
+| **Agents** | 10 | Specialized sub-agents for every workflow phase |
 | **Custom linters** | 2 | Architecture (layer_deps) and file size enforcement |
 | **Hooks** | 3 | Real-time advisory checks on every file write |
 | **Templates** | 8 | App spec, feature specs (full + lite), plans, stories, test plans, design docs, pipeline status |
@@ -345,7 +345,7 @@ SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT �
 5. The **implementer** agent(s) build from the plan (teams for parallel stories)
 6. The **test-writer** fills coverage gaps, **e2e-writer** generates Playwright tests
 7. The **devops** agent generates CI/CD, Dockerfile, and deployment configs
-8. **spec-reviewer** + **code-reviewer** validate (auto-loop on failures, calibrated against eval samples)
+8. **spec-reviewer** + **code-reviewer** + **security-reviewer** validate (auto-loop on failures, calibrated against eval samples)
 9. **You approve for PR** (checkpoint 2)
 10. The **pr-writer** creates a structured PR with story-based commits
 
@@ -366,7 +366,7 @@ Use this when adding a significant feature to an existing application. Same full
 3. **You approve the plan** (checkpoint 1)
 4. The **implementer** agent builds from the approved plan, story by story
 5. **e2e-writer** and **devops** agents generate tests and configs
-6. **spec-reviewer** + **code-reviewer** validate the output
+6. **spec-reviewer** + **code-reviewer** + **security-reviewer** validate the output
 7. **You approve for PR** (checkpoint 2)
 8. The **pr-writer** agent creates a structured PR
 
@@ -468,7 +468,7 @@ No. Describe your own architecture in `CLAUDE.md` and customize the `layer_deps.
 **Can I use this with TypeScript / Go / other languages?**
 The framework is language-agnostic. You'd need to update `pyproject.toml`, the Makefile, and language-specific linters.
 
-**What if I don't want all 9 agents?**
+**What if I don't want all 10 agents?**
 Start with spec-writer, implementer, and code-reviewer. Add others as your workflow matures.
 
 **How is this different from just using CLAUDE.md?**

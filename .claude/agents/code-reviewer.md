@@ -62,13 +62,7 @@ You do not check spec compliance — that is the spec-reviewer's job.
 
 ### Security
 
-- [ ] No hardcoded secrets, API keys, or passwords
-- [ ] No SQL injection vulnerabilities (parameterized queries used)
-- [ ] Input validation on all external inputs
-- [ ] No sensitive data in logs (passwords, tokens, PII)
-- [ ] Dependencies checked for known CVEs
-- [ ] Authentication/authorization checks on protected endpoints
-- [ ] CORS configuration appropriate
+Security is reviewed by the dedicated security-reviewer agent. See `.claude/agents/security-reviewer.md`.
 
 ### Performance
 

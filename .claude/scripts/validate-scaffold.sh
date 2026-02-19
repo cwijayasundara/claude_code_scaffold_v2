@@ -64,7 +64,7 @@ echo "5. Agents"
 for agent in test-writer; do
   if [[ -f ".claude/agents/$agent.yaml" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
-for agent in spec-writer implementer refactorer code-reviewer spec-reviewer pr-writer e2e-writer devops; do
+for agent in spec-writer implementer refactorer code-reviewer spec-reviewer security-reviewer pr-writer e2e-writer devops; do
   if [[ -f ".claude/agents/$agent.md" ]]; then pass "$agent agent"; else fail "$agent agent missing"; fi
 done
 AGENT_COUNT=$(ls .claude/agents/ 2>/dev/null | wc -l | tr -d ' ')

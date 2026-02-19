@@ -86,7 +86,7 @@ The pipeline orchestrator ([pipeline.md](pipeline.md)) drives the following phas
 | 7. Test Fill | test-writer | Wait — auto-triggered if coverage < 80% |
 | 8. E2E Tests | e2e-writer | Wait — generates from test plan |
 | 9. DevOps | devops | Wait — generates CI/CD and infra configs |
-| 10. Review | spec-reviewer + code-reviewer | Review verdicts presented for awareness |
+| 10. Review | spec-reviewer + code-reviewer + security-reviewer | Review verdicts presented for awareness |
 | 11. PR | pr-writer | Merge the PR |
 
 ### Human Approval Checkpoints

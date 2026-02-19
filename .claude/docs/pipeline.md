@@ -116,7 +116,7 @@ After implementation:
 
 ### Phase 10: Review
 
-**Agents**: spec-reviewer + code-reviewer (invoke sequentially)
+**Agents**: spec-reviewer + code-reviewer + security-reviewer (invoke sequentially)
 
 1. Invoke **spec-reviewer** — does the implementation match the spec?
    - If FAIL: re-invoke implementer to fix issues, then re-review
@@ -124,10 +124,13 @@ After implementation:
 2. Invoke **code-reviewer** — is the code quality acceptable?
    - If FAIL: re-invoke implementer to fix issues, then re-review
    - If PASS: continue
+3. Invoke **security-reviewer** — is the code secure?
+   - If FAIL: re-invoke implementer to fix security issues, then re-review
+   - If PASS: continue
 
 **Review loop**: Max 3 review cycles. If still failing after 3, present issues to user.
 
-**Gate**: Both spec-reviewer and code-reviewer pass
+**Gate**: All three reviewers pass (spec-reviewer + code-reviewer + security-reviewer)
 
 ### APPROVAL CHECKPOINT 2
 

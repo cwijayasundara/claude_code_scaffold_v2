@@ -57,7 +57,7 @@ SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT �
 1. **Verify artifacts** before advancing — check files exist at expected paths
 2. **Update `specs/pipeline_status.md`** after each phase (copy template from `.claude/templates/pipeline_status.md` if it doesn't exist)
 3. **Wait for human approval** at two checkpoints: before implementation and before PR
-4. **Loop on review failures** — if spec-review or code-review fails, re-invoke implementer, then re-review (max 3 cycles)
+4. **Loop on review failures** — if spec-review, code-review, or security-review fails, re-invoke implementer, then re-review (max 3 cycles)
 5. **Use teams for parallel stories (mandatory)** — when 4+ stories AND 2+ parallel groups, you MUST create a team with implementer agents per group. This is a mechanical threshold, not a judgment call — count stories and groups, then follow the rule.
 
 Details: [.claude/docs/pipeline.md](.claude/docs/pipeline.md) | [.claude/docs/workflow.md](.claude/docs/workflow.md)
@@ -77,7 +77,7 @@ Details: [.claude/docs/conventions.md](.claude/docs/conventions.md) | [.claude/d
 Framework: `.claude/` (`agents/`, `docs/`, `evals/`, `hooks/`, `linters/`, `templates/`, `scripts/`, `lint_all.sh`).
 Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 
-## Agents (9)
+## Agents (10)
 
 | Agent | Role |
 |-------|------|
@@ -85,13 +85,14 @@ Specs: `specs/` (`features/`, `stories/`, `design/`, `tests/`, `plans/`).
 | `implementer` | Code + tests from spec, story-by-story or layer-by-layer |
 | `refactorer` | Continuous debt reduction |
 | `spec-reviewer` | Validates implementation against spec |
-| `code-reviewer` | Validates code quality, conventions, security, and performance |
+| `code-reviewer` | Validates code quality, conventions, and performance |
+| `security-reviewer` | Validates security: OWASP Top 10, auth flows, secrets, dependencies |
 | `test-writer` | Coverage gap filling after implementation |
 | `e2e-writer` | Playwright E2E tests and API contract tests from test plan |
 | `devops` | CI/CD pipelines, deployment configs, infrastructure-as-code |
 | `pr-writer` | Creates structured PRs with story-based commits |
 
-**Two-stage review**: spec-reviewer (spec compliance) + code-reviewer (code quality) — both must pass.
+**Three-stage review**: spec-reviewer (spec compliance) + code-reviewer (code quality) + security-reviewer (security) — all three must pass.
 
 ## Agent Instructions
 

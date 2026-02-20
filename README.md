@@ -324,13 +324,49 @@ make test                  # Unit + integration tests
 
 ## Workflow
 
-Three modes — your prompt wording is the switch:
+Your prompt wording is the switch. The agent classifies your request and routes to the correct workflow automatically.
 
-- **Greenfield (Full SDLC)**: "Build me X" — runs `SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR`
-- **Feature (Feature SDLC)**: "Add feature X" — same pipeline, scoped to one feature
-- **Day-to-day**: "Fix bug in X" / "Refactor X" — direct changes, quality gates only
+### Trigger Words
 
-See [.claude/docs/workflow.md](.claude/docs/workflow.md) for detailed mode descriptions and examples.
+| What you say | What happens |
+|---|---|
+| `"Build me ..."` / `"Create a ..."` / `"I want an app that ..."` | **Full Pipeline** — spec-writer interviews you, then runs all 11 phases automatically |
+| `"Add feature X"` / `"Build X feature"` / `"Add X to the app"` | **Feature Pipeline** — same 11 phases, scoped to one feature |
+| `"Here's a spec for X"` / paste a spec | **Spec-provided** — verifies spec, creates stories + plan, waits for approval, then implements |
+| `"Continue the pipeline"` / `"What's next?"` / `"Resume"` | **Resume** — reads `specs/pipeline_status.md` and picks up from the next incomplete phase |
+| `"Fix bug in X"` / `"Refactor X"` / `"Add validation to X"` | **Day-to-day** — direct code changes, quality gates run automatically |
+
+### Full / Feature Pipeline
+
+```
+SPEC → STORIES → DESIGN → TEST PLAN → PLAN → [APPROVE] → IMPLEMENT → TEST FILL → E2E → DEVOPS → REVIEW → [APPROVE] → PR
+```
+
+The pipeline pauses at two human checkpoints: before implementation (approve the plan) and before PR (approve the review verdicts).
+
+### Example Prompts
+
+```bash
+# Greenfield — builds entire app from scratch
+"Build me a task management API with user auth and team workspaces"
+"Create a CLI tool that monitors AWS costs and sends Slack alerts"
+"I want an app that tracks inventory across multiple warehouses"
+
+# Feature — adds to existing app
+"Add feature: email notifications when tasks are overdue"
+"Build a CSV export feature for the reports page"
+"Add OAuth2 login to the app"
+
+# Resume — continues across conversations
+"Continue the pipeline"
+"What's next?"
+
+# Day-to-day — no pipeline, just code
+"Fix the 500 error in the /users endpoint"
+"Refactor the notification service to use the strategy pattern"
+```
+
+See [.claude/docs/workflow.md](.claude/docs/workflow.md) for detailed mode descriptions.
 
 ---
 

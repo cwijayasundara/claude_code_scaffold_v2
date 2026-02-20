@@ -31,10 +31,18 @@ lint-custom: ## Run custom linters (layer_deps, file_size)
 # ---- Tests ----
 
 test-unit: ## Run unit tests (fast, mocked, 80% coverage minimum)
-	pytest tests/unit/ -m unit --cov=src --cov-report=term-missing --cov-fail-under=80
+	@if find tests/unit -name 'test_*.py' 2>/dev/null | grep -q .; then \
+		pytest tests/unit/ -m unit --cov=src --cov-report=term-missing --cov-fail-under=80; \
+	else \
+		echo "No unit tests found — skipping (add tests in tests/unit/)"; \
+	fi
 
 test-integration: ## Run integration tests (real components)
-	pytest tests/integration/ -m integration
+	@if find tests/integration -name 'test_*.py' 2>/dev/null | grep -q .; then \
+		pytest tests/integration/ -m integration; \
+	else \
+		echo "No integration tests found — skipping (add tests in tests/integration/)"; \
+	fi
 
 test-e2e: ## Run end-to-end tests (deployed service, Playwright)
 	pytest tests/e2e/ -m e2e

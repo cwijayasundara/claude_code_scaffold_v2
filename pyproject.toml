@@ -21,6 +21,7 @@ dev = [
     "factory-boy>=3.3",
     "playwright>=1.40",
     "pytest-playwright>=0.5",
+    "httpx>=0.27",
 ]
 
 # ---- Ruff (linter + formatter) ----

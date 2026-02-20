@@ -12,24 +12,49 @@ Generate Playwright E2E tests and API contract tests from the test plan's E2E se
 2. **Read the design doc** — `specs/design/<feature-name>.md` for API contracts, routes, and expected behaviors
 3. **Read existing E2E infrastructure** — check `tests/e2e/` for existing conftest, page objects, and fixtures
 3b. **Check for overlapping coverage** — review what unit and integration tests already cover. E2E tests should exercise full API contracts and user flows, NOT re-verify individual endpoints that already have dedicated tests at lower levels.
-4. **Set up E2E infrastructure** (if not already present):
-   a. Create `tests/e2e/conftest.py` with shared fixtures (page, api_client, test_data, base_url)
-   b. Create `tests/e2e/__init__.py`
-   c. Add `e2e` marker to `pyproject.toml` if not present
-   d. Add a `base_url` fixture that reads `BASE_URL` from environment (default: `http://localhost:8000`). E2E tests must connect to a running server over real HTTP.
+4. **Bootstrap E2E infrastructure** (if not already present):
+   a. Copy templates from `.claude/templates/e2e/` into `tests/e2e/`:
+      ```
+      .claude/templates/e2e/conftest.py        → tests/e2e/conftest.py
+      .claude/templates/e2e/page_objects/       → tests/e2e/page_objects/
+      .claude/templates/e2e/factories/          → tests/e2e/factories/
+      ```
+   b. Remove example files that don't apply to the feature:
+      - `test_example_ui.py` and `test_example_api.py` are reference examples — do NOT copy them into the project
+      - `page_objects/example_page.py` — replace with feature-specific page objects
+      - `factories/user_factory.py` — replace with feature-specific factories
+   c. Create `tests/e2e/__init__.py` if missing
+   d. Add `e2e` marker to `pyproject.toml` if not present
    e. Ensure `pyproject.toml` has `asyncio_mode = "auto"` under `[tool.pytest.ini_options]` if using async tests
+
+### Template inventory (`.claude/templates/e2e/`)
+
+| Template | Purpose | Copy as-is? |
+|----------|---------|-------------|
+| `conftest.py` | Shared fixtures: base_url, browser, browser_context, page, api_client, test_data | Yes — core infrastructure |
+| `page_objects/__init__.py` | Package init, re-exports BasePage | Yes |
+| `page_objects/base_page.py` | BasePage class with navigate, locator helpers, actions, assertions | Yes — extend for features |
+| `page_objects/example_page.py` | Example showing how to extend BasePage | Reference only — replace with real page objects |
+| `factories/__init__.py` | Package init | Yes — update imports for real factories |
+| `factories/base.py` | DictFactory base (factory-boy producing dicts for API payloads) | Yes — core infrastructure |
+| `factories/user_factory.py` | Example factory with Faker fields | Reference only — replace with real factories |
+| `test_example_ui.py` | Example UI tests using page objects | Reference only — use as pattern for real tests |
+| `test_example_api.py` | Example API contract tests using httpx + factories | Reference only — use as pattern for real tests |
 
 ### For UI features (frontend exists)
 
-5. **Create page objects** for complex UIs — `tests/e2e/pages/<page_name>.py`
+5. **Create page objects** for complex UIs — `tests/e2e/page_objects/<page_name>.py`
+   - Extend `BasePage` from the template
    - Encapsulate selectors and common interactions
    - Use Playwright's sync API (`playwright.sync_api`)
    - Use `data-testid` attributes for selectors where possible
+   - See `.claude/templates/e2e/page_objects/example_page.py` for the pattern
 6. **Write browser E2E tests** — `tests/e2e/test_<feature>_e2e.py`
    - One test per E2E test case from the test plan
    - Use `@pytest.mark.e2e` marker on every test
    - Test complete user flows through the browser
    - Assert on visible outcomes, not internal state
+   - See `.claude/templates/e2e/test_example_ui.py` for the pattern
 
 ### For API-only features (no frontend)
 
@@ -39,56 +64,13 @@ Generate Playwright E2E tests and API contract tests from the test plan's E2E se
    - Validate response status codes, headers, and body structure
    - Test complete API flows (create -> read -> update -> delete)
    - Use `@pytest.mark.e2e` marker on every test
+   - See `.claude/templates/e2e/test_example_api.py` for the pattern
 
 ### Finalize
 
 7. **Run E2E tests** — `pytest tests/e2e/ -m e2e -v`
 8. **Run linters** — `python3 .claude/lint_all.py`
 9. **Verify coverage** — every E2E test case from the test plan has a corresponding test
-
-## Fixture Template
-
-```python
-# tests/e2e/conftest.py
-import os
-
-import pytest
-from playwright.sync_api import sync_playwright, Browser, Page
-
-
-@pytest.fixture(scope="session")
-def base_url() -> str:
-    """Base URL for the running server. Override via BASE_URL env var."""
-    return os.environ.get("BASE_URL", "http://localhost:8000")
-
-
-@pytest.fixture(scope="session")
-def browser() -> Browser:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        yield browser
-        browser.close()
-
-
-@pytest.fixture
-def page(browser: Browser) -> Page:
-    page = browser.new_page()
-    yield page
-    page.close()
-
-
-@pytest.fixture
-def api_client(base_url: str) -> httpx.Client:
-    import httpx
-    with httpx.Client(base_url=base_url) as client:
-        yield client
-
-
-@pytest.fixture
-def test_data() -> dict:
-    """Override in feature-specific conftest for custom test data."""
-    return {}
-```
 
 ## Rules
 
@@ -98,11 +80,12 @@ Follow testing rules in `.claude/docs/testing-standard.md` and file size limits 
 - Use `@pytest.mark.e2e` on all E2E tests
 - Use Playwright's sync API for browser tests; httpx for API contract tests
 - E2E API tests must use real HTTP connections — never use `ASGITransport`, `TestClient`, or in-process app mounting (those belong in integration tests)
-- Page objects for any UI with 3+ interactions
+- Page objects for any UI with 3+ interactions — extend `BasePage` from the template
 - No hardcoded URLs — use fixtures for base_url
 - No `time.sleep()` — use Playwright's built-in waiting (`wait_for_selector`, `expect`)
 - Tests must be independent — no shared state between tests
 - Clean up test data in fixtures (yield + teardown)
+- Always copy `conftest.py`, `page_objects/base_page.py`, and `factories/base.py` from templates — do not rewrite from scratch
 
 ## Allowed Tools
 

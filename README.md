@@ -48,10 +48,11 @@ This scaffold gives your agents a production-grade harness:
 │  │  │  │  layer_deps.py — forward-only layer imports      │  │  │  │
 │  │  │  │  file_size.py  — max 300 lines/file, 50/func    │  │  │  │
 │  │  │  │  ┌─────────────────────────────────────────────┐ │  │  │  │
-│  │  │  │  │     Templates (8) + Reviewer Evals (6)     │ │  │  │  │
+│  │  │  │  │  Templates (8 spec + 9 E2E) + Evals (6)   │ │  │  │  │
 │  │  │  │  │  app_spec | feature_spec | feature_lite    │ │  │  │  │
 │  │  │  │  │  design_doc | execution_plan | stories     │ │  │  │  │
 │  │  │  │  │  test_plan | pipeline_status               │ │  │  │  │
+│  │  │  │  │  e2e/ (conftest, page objects, factories)  │ │  │  │  │
 │  │  │  │  │  .claude/evals/ (reviewer calibration)       │ │  │  │  │
 │  │  │  │  └─────────────────────────────────────────────┘ │  │  │  │
 │  │  │  └───────────────────────────────────────────────────┘  │  │  │
@@ -118,7 +119,7 @@ This scaffold gives your agents a production-grade harness:
  │er (team) │  │writer    │  │writer    │  │          │
  │          │  │          │  │          │  │          │
  │src/      │  │tests/    │  │tests/e2e/│  │infra/    │
- │tests/    │  │(gaps)    │  │Playwright│  │Dockerfile│
+ │tests/    │  │(gaps)    │  │templates │  │Dockerfile│
  └──────────┘  └──────────┘  └──────────┘  └─────┬────┘
                                                    │
                            ┌───────────────────────┘
@@ -267,13 +268,14 @@ This scaffold gives your agents a production-grade harness:
 |---|---|---|
 | **Agents** | 10 | Specialized sub-agents for every workflow phase |
 | **Custom linters** | 2 | Architecture (layer_deps) and file size enforcement |
-| **Hooks** | 3 | Real-time advisory checks on every file write |
-| **Templates** | 8 | App spec, feature specs (full + lite), plans, stories, test plans, design docs, pipeline status |
+| **Hooks** | 4 | Real-time advisory checks on file writes, scaffold read guards, and spec coverage on commit |
+| **Spec templates** | 8 | App spec, feature specs (full + lite), plans, stories, test plans, design docs, pipeline status |
+| **E2E templates** | 9 | Conftest fixtures, BasePage page object, DictFactory base, example factories/page objects/tests |
 | **Reviewer evals** | 6 | Known-good and known-bad code samples for calibrating code-reviewer accuracy |
-| **Framework docs** | 9 | Pipeline, workflow, architecture, conventions, testing-standard, linters, spec-system, git-workflow, onboarding |
+| **Framework docs** | 10 | Pipeline, workflow, architecture, conventions, testing-standard, linters, spec-system, git-workflow, onboarding, scaffold-overview |
 | **CI/CD** | 2 | GitHub Actions for linting, testing, and E2E on every push |
 
-**Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy, Playwright. Coverage enforced at 80% minimum.
+**Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy, Playwright, httpx. Coverage enforced at 80% minimum.
 
 ---
 
@@ -352,6 +354,29 @@ See [.claude/docs/onboarding.md](.claude/docs/onboarding.md) for details.
 
 ---
 
+## E2E Test Templates
+
+The `e2e-writer` agent bootstraps E2E infrastructure by copying templates from `.claude/templates/e2e/` into `tests/e2e/`:
+
+```
+.claude/templates/e2e/
+├── conftest.py                  # Fixtures: base_url, browser, browser_context, page, api_client, test_data
+├── page_objects/
+│   ├── __init__.py              # Re-exports BasePage
+│   ├── base_page.py             # BasePage: navigate, locator helpers, actions, assertions
+│   └── example_page.py          # Reference: how to extend BasePage
+├── factories/
+│   ├── __init__.py
+│   ├── base.py                  # DictFactory: factory-boy producing dicts for API payloads
+│   └── user_factory.py          # Reference: example Faker-based factory
+├── test_example_ui.py           # Reference: Playwright UI tests using page objects
+└── test_example_api.py          # Reference: httpx API contract tests using factories
+```
+
+**Core files** (conftest, base_page, base factory) are copied as-is. **Reference files** (examples) are patterns — the agent replaces them with feature-specific implementations.
+
+---
+
 ## Makefile Reference
 
 ```bash
@@ -359,7 +384,8 @@ make help              # Show all available targets
 make build             # Install dependencies
 make lint              # Run ruff + mypy
 make lint-custom       # Run custom linters
-make test              # Run unit + integration tests
+make test              # Run unit + integration tests (gracefully skips if no tests exist)
+make test-e2e          # Run E2E tests (requires running server at BASE_URL)
 make ci                # Full CI suite: lint + custom linters + tests
 make validate          # Validate scaffold integrity
 ```

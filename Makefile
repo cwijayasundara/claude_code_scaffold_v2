@@ -3,7 +3,7 @@
 # Customize commands for your build system as needed.
 # ============================================================
 
-.PHONY: help build lint lint-custom test test-unit test-integration test-e2e test-e2e-headed test-e2e-trace test-smoke test-perf ci validate deploy-staging deploy-production
+.PHONY: help build lint lint-custom test test-unit test-integration test-e2e test-e2e-headed test-e2e-trace test-smoke test-perf ci validate run deploy-staging deploy-production
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -69,6 +69,11 @@ ci: lint lint-custom test ## Full CI: lint + custom linters + typecheck + tests 
 
 validate: ## Validate scaffold integrity
 	python3 .claude/scripts/validate_scaffold.py
+
+# ---- Run ----
+
+run: ## Start the application server (customize for your framework)
+	@echo "Configure your run command here (e.g., uvicorn src.runtime.main:app --port 8000)"
 
 # ---- Deploy ----
 

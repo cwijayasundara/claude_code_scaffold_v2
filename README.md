@@ -275,7 +275,7 @@ This scaffold gives your agents a production-grade harness:
 | **Framework docs** | 10 | Pipeline, workflow, architecture, conventions, testing-standard, linters, spec-system, git-workflow, onboarding, scaffold-overview |
 | **CI/CD** | 2 | GitHub Actions for linting, testing, and E2E on every push |
 
-**Stack**: Python 3.12, FastAPI, Pydantic, pytest, ruff, mypy, Playwright, httpx. Coverage enforced at 80% minimum.
+**Dev tooling** (bundled): Python 3.12, pytest, ruff, mypy, Playwright, httpx, factory-boy. **Recommended app frameworks** (add to `dependencies`): FastAPI, Pydantic. Coverage enforced at 80% minimum.
 
 ---
 
@@ -383,11 +383,21 @@ The `e2e-writer` agent bootstraps E2E infrastructure by copying templates from `
 make help              # Show all available targets
 make build             # Install dependencies
 make lint              # Run ruff + mypy
-make lint-custom       # Run custom linters
-make test              # Run unit + integration tests (gracefully skips if no tests exist)
+make format            # Auto-fix lint issues
+make lint-custom       # Run custom linters (layer_deps, file_size)
+make test              # Run unit + integration (gracefully skips if no tests exist)
+make test-unit         # Run unit tests only (80% coverage enforced)
+make test-integration  # Run integration tests only
 make test-e2e          # Run E2E tests (requires running server at BASE_URL)
+make test-e2e-headed   # Run E2E tests with visible browser
+make test-e2e-trace    # Run E2E tests with trace recording
+make test-smoke        # Run smoke tests (health checks)
+make test-perf         # Run performance tests (load/stress)
 make ci                # Full CI suite: lint + custom linters + tests
+make run               # Start the application server (customize for your framework)
 make validate          # Validate scaffold integrity
+make deploy-staging    # Deploy to staging (customize for your infra)
+make deploy-production # Swap staging to production
 ```
 
 ---
